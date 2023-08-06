@@ -1,0 +1,7 @@
+{
+  "name": "guias-remision-v3",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
