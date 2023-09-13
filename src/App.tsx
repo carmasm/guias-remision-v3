@@ -23,23 +23,57 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import LoginPage from './pages/Login';
+import ConsultarGuiasRemisionPage from './pages/ConsultarGuiasRemision/ConsultarGuiasRemision';
+import DocumentosFiscalesPage from './pages/CAI/DocumentosFiscales';
+import NuevaGuiaRemisionPage from './pages/NuevaGuiaRemision/NuevaGuiaRemision';
+import ListaUsuariosPage from './pages/Usuarios/ListaUsuarios';
+
 setupIonicReact();
 
 const App: React.FC = () => {
+
+  const isLoginPage = window.location.pathname === '/page/login';
+
   return (
+    // <IonApp> // No renderiza después de hacer login, queda en blanco
+    //   <IonReactRouter>
+    //     {location.pathname !== '/' && ( // Only render IonSplitPane if not on root URL
+    //       <IonSplitPane contentId="main">
+    //         <Menu />
+    //         <IonRouterOutlet id="main">
+    //           <Route path="/page/consultar-guias-remision" component={ConsultarGuiasRemisionPage} />
+    //         </IonRouterOutlet>
+    //       </IonSplitPane>
+    //     )}
+    //     <Route path="/" exact={true}>
+    //       <Redirect to="/page/login" />
+    //     </Route>
+    //     <Route path="/page/login" component={LoginPage} />
+    //     {/* <Route path="/page/:name" exact={true}>
+    //           <Page />
+    //         </Route> */}
+    //   </IonReactRouter>
+    // </IonApp>
     <IonApp>
       <IonReactRouter>
         <IonSplitPane contentId="main">
           <Menu />
           <IonRouterOutlet id="main">
-            <Route path="/" exact={true}>
-              <Redirect to="/folder/Inbox" />
-            </Route>
-            <Route path="/folder/:name" exact={true}>
-              <Page />
-            </Route>
+            {/* <Redirect exact from="/" to="/page/login" /> // Se muestra el IonSplitPane en la pantalla de login pero mantiene los efectos de transición
+            <Route path="/page/login" component={LoginPage} /> */}
+            <Route path="/page/consultar-guias-remision" component={ConsultarGuiasRemisionPage} />
+            <Route path="/page/cai" component={DocumentosFiscalesPage} />
+            <Route path="/page/nueva-guia-remision" component={NuevaGuiaRemisionPage} />
+            <Route path="/page/usuarios" component={ListaUsuariosPage} />
           </IonRouterOutlet>
         </IonSplitPane>
+        {/* <Redirect exact from="/" to="/page/login" /> // Al darle refresh regresa al login en lugar de quedarse en la ruta que está
+        <Route path="/page/login" component={LoginPage} /> */}
+         <Route path="/" exact={true}>
+            <Redirect to="/page/login" />
+         </Route>
+         <Route path="/page/login" component={LoginPage} /> {/* Al estar fuera del IonRouterOutlet se pierde el efecto de transición entre el login y la siguiente URL */}
       </IonReactRouter>
     </IonApp>
   );
