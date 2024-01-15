@@ -16,7 +16,10 @@ function validateEmail(email: string) {
     return re.test(String(email).toLowerCase());
 }
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 
 const Login: React.FC = () => {
     const history = useHistory();
@@ -112,8 +115,10 @@ const Login: React.FC = () => {
             <IonRow>
               <IonCol>
               <IonItem>
-              <IonLabel position="floating">Usuario</IonLabel>
+              {/* <IonLabel position="floating">Usuario</IonLabel> */}
               <IonInput
+                  label="Usuario"
+                  labelPlacement="floating"
                   type="email"
                   value={userName}
                   onIonChange={(e) => setUserName(e.detail.value!)}
@@ -126,8 +131,10 @@ const Login: React.FC = () => {
             <IonRow>
               <IonCol>
               <IonItem>
-                <IonLabel position="floating">Contraseña</IonLabel>
+                {/* <IonLabel position="floating">Contraseña</IonLabel> */}
                 <IonInput
+                  label="Contraseña"
+                  labelPlacement="floating"
                   type="password"
                   value={password}
                   onIonChange={(e) => setPassword(e.detail.value!)}

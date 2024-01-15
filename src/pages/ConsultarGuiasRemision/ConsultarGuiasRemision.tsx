@@ -103,7 +103,7 @@ const ConsultarGuiasRemision: React.FC = () => {
         <IonButtons slot="start">
             <IonMenuButton />
         </IonButtons>
-        <IonTitle>Google Cloud Firestore CRUD</IonTitle>
+        <IonTitle>Google Cloud Firestore CRUD v2</IonTitle>
         </IonToolbar>
     </IonHeader>
 

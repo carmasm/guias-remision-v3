@@ -3,19 +3,19 @@ import 'firebase/compat/firestore';
 
 const db = firebase.firestore();
 
-// Enable offline persistence
-db.enablePersistence()
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      // Multiple tabs open, persistence can only be enabled
-      // in one tab at a time.
-      console.error('Persistence failed: multiple tabs open');
-    } else if (err.code === 'unimplemented') {
-      // The current browser does not support all of the
-      // features required to enable persistence.
-      console.error('Persistence not supported');
-    }
-  });
+// // Enable offline persistence
+// db.enablePersistence()
+//   .catch((err) => {
+//     if (err.code === 'failed-precondition') {
+//       // Multiple tabs open, persistence can only be enabled
+//       // in one tab at a time.
+//       console.error('Persistence failed: multiple tabs open');
+//     } else if (err.code === 'unimplemented') {
+//       // The current browser does not support all of the
+//       // features required to enable persistence.
+//       console.error('Persistence not supported');
+//     }
+//   });
 
 // Specify 'collectionName' as a string type
 export const addDocument = (collectionName: string, data: object) => {
