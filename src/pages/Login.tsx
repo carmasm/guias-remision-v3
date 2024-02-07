@@ -48,7 +48,7 @@ const Login: React.FC = () => {
           setIserror(true);
           return;
       }
-  
+
       if (!password) {
           dismiss();
           setMessage("Ingrese una contraseña");
@@ -105,7 +105,7 @@ const Login: React.FC = () => {
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol>
+            <IonCol size="12" size-md="6" offset-md="3">
               <IonIcon
                   style={{ fontSize: "70px", color: "#0040ff" }}
                   icon={personCircle}
@@ -113,7 +113,7 @@ const Login: React.FC = () => {
             </IonCol>
           </IonRow>
             <IonRow>
-              <IonCol>
+              <IonCol size="12" size-md="6" offset-md="3">
               <IonItem>
               {/* <IonLabel position="floating">Usuario</IonLabel> */}
               <IonInput
@@ -129,7 +129,7 @@ const Login: React.FC = () => {
             </IonRow>
   
             <IonRow>
-              <IonCol>
+              <IonCol size="12" size-md="6" offset-md="3">
               <IonItem>
                 {/* <IonLabel position="floating">Contraseña</IonLabel> */}
                 <IonInput
@@ -144,7 +144,7 @@ const Login: React.FC = () => {
               </IonCol>
             </IonRow>
             <IonRow>
-              <IonCol>
+              <IonCol size="12" size-md="6" offset-md="3">
                 <p style={{ fontSize: "small" }}>
                     Al hacer clic en LOGIN aceptas nuestra <a href="#">Política de Privacidad</a>
                 </p>

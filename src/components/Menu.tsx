@@ -34,7 +34,15 @@ import { archiveOutline,
          warningSharp,
          logOutOutline,
          logOut,
-         logOutSharp } from 'ionicons/icons';
+         logOutSharp, 
+         fileTray,
+         fileTraySharp,
+         locationSharp,
+         location,
+         checkmarkCircle,
+         checkmarkCircleSharp,
+         settings,
+         settingsSharp} from 'ionicons/icons';
 import './Menu.css';
 
 import { useHistory } from 'react-router-dom';
@@ -71,16 +79,64 @@ const appPages: AppPage[] = [
     mdIcon: documentTextSharp,
   },
   {
+    title: 'Aprobaciones',
+    url: '/page/aprobaciones',
+    iosIcon: checkmarkCircle,
+    mdIcon: checkmarkCircleSharp,
+  },
+  {
     title: 'Usuarios',
     url: '/page/usuarios',
     iosIcon: people,
     mdIcon: peopleSharp,
   },
   {
-    title: 'CAI',
+    title: 'Códigos',
+    url: '/page/Codigos',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
+    title: 'Remitentes',
+    url: '/page/remitentes',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
+    title: 'Destinatarios',
+    url: '/page/destinatarios',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
+    title: 'Productores',
+    url: '/page/productores',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
+    title: 'Productos',
+    url: '/page/productos',
+    iosIcon: fileTray,
+    mdIcon: fileTraySharp,
+  },
+  {
+    title: 'Documentos Fiscales',
     url: '/page/cai',
     iosIcon: reader,
     mdIcon: readerSharp,
+  },
+  {
+    title: 'Centros de Recolección',
+    url: '/page/centros-rec',
+    iosIcon: location,
+    mdIcon: locationSharp,
+  },
+  {
+    title: 'Configuraciones',
+    url: '/page/configuraciones',
+    iosIcon: settings,
+    mdIcon: settingsSharp,
   },
   {
     title: 'Cerrar Sesión',
