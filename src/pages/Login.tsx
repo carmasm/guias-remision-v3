@@ -24,8 +24,13 @@ if (!firebase.apps.length) {
 const Login: React.FC = () => {
     const history = useHistory();
 
-    const [userName, setUserName] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    // const [userName, setUserName] = useState<string>("");
+    // const [password, setPassword] = useState<string>("");
+    const [loginData, setLoginData] = useState({
+      userName: null,
+      password: null,
+    })
+
     const [iserror, setIserror] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
     const splitPaneRef = useRef<HTMLIonSplitPaneElement>(null);
@@ -39,36 +44,47 @@ const Login: React.FC = () => {
     //     splitPaneRef = document.getElementById("main");
     //   }, []);
 
+    const handleInputChange = (e: any) => {
+      const {name, value} = e.target;
+
+      console.log(name, value);
+      setLoginData({
+          ...loginData, 
+          [name]: value 
+      });
+    }
+
 
     const handleLogin = async () => {
 
-      if (!userName) {
+      if (!loginData.userName) {
           // dismiss();
           setMessage("Ingrese el usuario");
           setIserror(true);
           return;
       }
 
-      if (!password) {
+      if (!loginData.password) {
           dismiss();
           setMessage("Ingrese una contraseña");
           setIserror(true);
           return;
       }
   
-      const loginData = {
-          "idUsuario": 0,
-          "codigo": userName,
-          "nombre": "string",
-          "contrasena": password,
-          "rol": "string",
-          "activo": true
-      }
+      // const loginData = {
+      //     "idUsuario": 0,
+      //     "codigo": userName,
+      //     "nombre": "string",
+      //     "contrasena": password,
+      //     "rol": "string",
+      //     "activo": true
+      // }
 
       try {
-        const email = `${userName}@gplanethn.com`
+        const email = `${loginData.userName}@gplanethn.com`
+        debugger
 
-        const res = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const res = await firebase.auth().signInWithEmailAndPassword(email, loginData.password);
         console.log(res)
 
         history.push("/page/consultar-guias-remision");
@@ -120,8 +136,9 @@ const Login: React.FC = () => {
                   label="Usuario"
                   labelPlacement="floating"
                   type="email"
-                  value={userName}
-                  onIonChange={(e) => setUserName(e.detail.value!)}
+                  value={loginData.userName}
+                  onIonInput={(e) => handleInputChange(e)}
+                  name="userName"
                   >
               </IonInput>
               </IonItem>
@@ -136,8 +153,9 @@ const Login: React.FC = () => {
                   label="Contraseña"
                   labelPlacement="floating"
                   type="password"
-                  value={password}
-                  onIonChange={(e) => setPassword(e.detail.value!)}
+                  value={loginData.password}
+                  onIonInput={(e) => handleInputChange(e)}
+                  name="password"
                   >
                 </IonInput>
               </IonItem>
@@ -148,7 +166,7 @@ const Login: React.FC = () => {
                 <p style={{ fontSize: "small" }}>
                     Al hacer clic en LOGIN aceptas nuestra <a href="#">Política de Privacidad</a>
                 </p>
-                <IonButton expand="block" onClick={() => { handleLogin(); splitPaneRef.current?.setAttribute("disabled","false");}}>Login</IonButton>
+                <IonButton expand="block" onClick={() => { handleLogin();}}>Login</IonButton>
                 <p style={{ fontSize: "medium" }}>
                     ¿Aún no tienes cuenta? <a href="#">Solicita una</a>
                 </p>

@@ -2,98 +2,82 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput, IonIte
 import { useParams } from 'react-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ExploreContainer from '../../components/ExploreContainer';
-import { addDocument, getDocuments, updateDocument, deleteDocument } from '../../firestoreService';
+import { pouchdbService } from '../../pouchdbService';
 import { pencil, trash } from 'ionicons/icons';
-
-// Define the interface for Firestore documents
-interface YourDocument {
-    DNI: string;
-    Descripcion: string;
-    Nombre: string;
-    id: string;
-  }
 
 const ConsultarGuiasRemision: React.FC = () => {
     
-    const [items, setItems] = useState<YourDocument[]>([]);
+    const [items, setItems] = useState<any[]>([]);
     const [newItem, setNewItem] = useState('');
-    const [editItem, setEditItem] = useState<YourDocument | null>(null);
+    const [editItem, setEditItem] = useState<any[]>([]);
 
     const { name } = useParams<{ name: string; }>();
 
   useEffect(() => {
-    // Load documents from Firestore
-    getDocuments('Codigos').then((querySnapshot) => {
-        const data: YourDocument[] = [];
-        querySnapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() } as YourDocument);
-        });
-        setItems(data);
-      });
+    // Load documents from CouchDB
+    pouchdbService.findAllDocumentsByType('GuiaRemision')
+              .then(data => {
+                setItems(data)
+                console.log(data)
+              })
+              .catch(error => {
+                console.error('Error fetching data:', error);
+              });
+    // console.count()
+    // debugger
   }, []);
 
   const handleAddItem = () => {
 
+    debugger
     // Create a new document based on the interface
-    const newItemData: Omit<YourDocument, 'id'> = {
-        DNI: 'XXXX-XXXX-XXXXX',
-        Descripcion: 'Description test',
-        Nombre: newItem,
-      };
+    const newItemData = {
+      FechaTransaccion: new Date(),
+      DNI: 'XXXX-XXXX-XXXXX',
+      Descripcion: 'Description test',
+      Nombre: newItem,
+      Tipo: 'GuiaRemision'
+  };
   
-      // Add a new document to Firestore
-      addDocument('Codigos', newItemData)
-        .then(() => {
+      // Add a new document to PouchDB
+      pouchdbService.addDocument(newItemData)
+      .then(() => {
           // After adding, fetch the updated list
-          return getDocuments('Codigos');
-        })
-        .then((querySnapshot) => {
-          const data: YourDocument[] = [];
-          querySnapshot.forEach((doc) => {
-            data.push({ id: doc.id, ...doc.data() } as YourDocument);
-          });
+          return pouchdbService.findAllDocumentsByType('GuiaRemision');
+      })
+      .then((data) => {
           setItems(data);
           setNewItem('');
-        });
+      });
   };
 
   const handleUpdateItem = () => {
     if (!editItem) return;
+    debugger
 
-    // Update a document in Firestore
-    updateDocument('Codigos', editItem.id, {
-      DNI: editItem.DNI,
-      Descripcion: editItem.Descripcion,
-      Nombre: editItem.Nombre,
-    })
-      .then(() => {
-        // After updating, fetch the updated list
-        return getDocuments('Codigos');
-      })
-      .then((querySnapshot) => {
-        const data: YourDocument[] = [];
-        querySnapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() } as YourDocument);
-        });
-        setItems(data);
-        setEditItem(null);
-      });
+     // Update a document in PouchDB
+     pouchdbService.updateDocument(editItem)
+     .then(() => {
+         // After updating, fetch the updated list
+         return pouchdbService.findAllDocumentsByType('GuiaRemision');
+     })
+     .then((data) => {
+         setItems(data);
+         setEditItem([]);
+     });
   };
 
-  const handleDeleteItem = (id: string) => {
-    // Delete a document in Firestore
-    deleteDocument('Codigos', id)
-      .then(() => {
+  const handleDeleteItem = (id: string, rev: string) => {
+    // Delete a document in PouchDB
+    debugger
+    pouchdbService.deleteDocument(id, rev)
+    .then(() => {
         // After deleting, fetch the updated list
-        return getDocuments('Codigos');
-      })
-      .then((querySnapshot) => {
-        const data: YourDocument[] = [];
-        querySnapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() } as YourDocument);
-        });
+        return pouchdbService.findAllDocumentsByType('GuiaRemision');
+    })
+    .then((data) => {
         setItems(data);
-      });
+    });
   };
 
   return (
@@ -103,7 +87,7 @@ const ConsultarGuiasRemision: React.FC = () => {
         <IonButtons slot="start">
             <IonMenuButton />
         </IonButtons>
-        <IonTitle>Google Cloud Firestore CRUD v2</IonTitle>
+        <IonTitle>Google Cloud Firestore CRUD v3</IonTitle>
         </IonToolbar>
     </IonHeader>
 
@@ -112,14 +96,14 @@ const ConsultarGuiasRemision: React.FC = () => {
           <IonInput
             placeholder="New Item"
             value={newItem}
-            onIonChange={(e) => setNewItem(e.detail.value!)}
+            onIonInput={(e) => setNewItem(e.detail.value!)}
           />
           <IonButton onClick={handleAddItem}>Add Item</IonButton>
         </IonItem>
 
         <IonList>
           {items.map((item) => (
-            <IonItem key={item.id}>
+            <IonItem key={item._id}>
               <IonInput
                 value={item.DNI}
                 onIonChange={(e) => {
@@ -144,7 +128,7 @@ const ConsultarGuiasRemision: React.FC = () => {
               <IonButton onClick={handleUpdateItem}>
                 <IonIcon icon={pencil} />
               </IonButton>
-              <IonButton onClick={() => handleDeleteItem(item.id)}>
+              <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>
                 <IonIcon icon={trash} />
               </IonButton>
             </IonItem>

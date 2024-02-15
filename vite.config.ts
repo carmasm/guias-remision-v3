@@ -9,7 +9,11 @@ export default defineConfig({
     react(),
     VitePWA({ registerType: 'autoUpdate' }),
     legacy()
-  ]
+  ],
+  define: {
+    // global: 'window'
+    global: process.env.NODE_ENV === 'production' ? 'global' : 'window'
+  },
   // test: {
   //   globals: true,
   //   environment: 'jsdom',
