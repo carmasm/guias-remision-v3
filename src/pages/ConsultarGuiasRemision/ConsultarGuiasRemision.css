@@ -1,0 +1,22 @@
+.print-preview {
+    position: fixed;
+    top: 5%; /* Adjust to the height of ion header */
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--ion-safe-area-top)); /* Adjust the height to fit the remaining screen */
+    background-color: white;
+    z-index: 999;
+    display: none;
+    /* border: 1px solid; */
+  }
+  
+  .print-preview.visible {
+    display: block;
+  }
+  
+
+@media print {
+  .hide-content-print {
+    display: none;
+  }
+}

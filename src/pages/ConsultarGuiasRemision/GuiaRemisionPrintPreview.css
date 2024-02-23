@@ -1,0 +1,51 @@
+
+@page {
+    size: letter;
+    margin: 0;
+    /* Reset default margin */
+}
+
+.invoice-print-preview {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.customer-details,
+.invoice-details {
+    width: 48%;
+}
+
+/* Style customer details section */
+.customer-details h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Style invoice details section */
+.invoice-details h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Adjust the margin top as needed */
+}
+
+/* Define styles to hide the buttons when printing */
+@media print {
+    .buttons-container {
+      display: none;
+    }
+  }

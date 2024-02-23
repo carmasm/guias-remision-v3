@@ -1,28 +1,33 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { useParams } from 'react-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ExploreContainer from '../../components/ExploreContainer';
 import { pouchdbService } from '../../pouchdbService';
-import { pencil, trash } from 'ionicons/icons';
+import { pencil, trash, print, eye } from 'ionicons/icons';
+import GuiaRemisionPrintPreview from './GuiaRemisionPrintPreview';
+import './ConsultarGuiasRemision.css';
 
 const ConsultarGuiasRemision: React.FC = () => {
-    
-    const [items, setItems] = useState<any[]>([]);
-    const [newItem, setNewItem] = useState('');
-    const [editItem, setEditItem] = useState<any[]>([]);
 
-    const { name } = useParams<{ name: string; }>();
+  const [items, setItems] = useState<any[]>([]);
+  const [newItem, setNewItem] = useState('');
+  const [editItem, setEditItem] = useState<any[]>([]);
+
+  // const [showPrintPreview, setShowPrintPreview] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const { name } = useParams<{ name: string; }>();
 
   useEffect(() => {
     // Load documents from CouchDB
-    pouchdbService.findAllDocumentsByType('GuiaRemision')
-              .then(data => {
-                setItems(data)
-                console.log(data)
-              })
-              .catch(error => {
-                console.error('Error fetching data:', error);
-              });
+    pouchdbService.findAllDocumentsByType('GuiasRemision')
+      .then(data => {
+        setItems(data)
+        console.log(data)
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
     // console.count()
     // debugger
   }, []);
@@ -36,18 +41,18 @@ const ConsultarGuiasRemision: React.FC = () => {
       DNI: 'XXXX-XXXX-XXXXX',
       Descripcion: 'Description test',
       Nombre: newItem,
-      Tipo: 'GuiaRemision'
-  };
-  
-      // Add a new document to PouchDB
-      pouchdbService.addDocument(newItemData)
+      Collection: 'GuiasRemision'
+    };
+
+    // Add a new document to PouchDB
+    pouchdbService.addDocument(newItemData)
       .then(() => {
-          // After adding, fetch the updated list
-          return pouchdbService.findAllDocumentsByType('GuiaRemision');
+        // After adding, fetch the updated list
+        return pouchdbService.findAllDocumentsByType('GuiasRemision');
       })
       .then((data) => {
-          setItems(data);
-          setNewItem('');
+        setItems(data);
+        setNewItem('');
       });
   };
 
@@ -55,43 +60,47 @@ const ConsultarGuiasRemision: React.FC = () => {
     if (!editItem) return;
     debugger
 
-     // Update a document in PouchDB
-     pouchdbService.updateDocument(editItem)
-     .then(() => {
-         // After updating, fetch the updated list
-         return pouchdbService.findAllDocumentsByType('GuiaRemision');
-     })
-     .then((data) => {
-         setItems(data);
-         setEditItem([]);
-     });
+    // Update a document in PouchDB
+    pouchdbService.updateDocument(editItem)
+      .then(() => {
+        // After updating, fetch the updated list
+        return pouchdbService.findAllDocumentsByType('GuiasRemision');
+      })
+      .then((data) => {
+        setItems(data);
+        setEditItem([]);
+      });
   };
 
   const handleDeleteItem = (id: string, rev: string) => {
     // Delete a document in PouchDB
     debugger
     pouchdbService.deleteDocument(id, rev)
-    .then(() => {
+      .then(() => {
         // After deleting, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiaRemision');
-    })
-    .then((data) => {
+        return pouchdbService.findAllDocumentsByType('GuiasRemision');
+      })
+      .then((data) => {
         setItems(data);
-    });
+      });
   };
+
+  const handleBackButtonClick = () => {
+    setSelectedItem(null); // Hide the print preview by setting selectedItem to null
+};
 
   return (
     <IonPage>
-    <IonHeader>
+      <IonHeader className="hide-content-print">
         <IonToolbar>
-        <IonButtons slot="start">
+          <IonButtons slot="start">
             <IonMenuButton />
-        </IonButtons>
-        <IonTitle>Google Cloud Firestore CRUD v3</IonTitle>
+          </IonButtons>
+          <IonTitle>Google Cloud Firestore CRUD v4</IonTitle>
         </IonToolbar>
-    </IonHeader>
+      </IonHeader>
 
-    <IonContent>
+      <IonContent className="hide-content-print">
         <IonItem>
           <IonInput
             placeholder="New Item"
@@ -101,7 +110,7 @@ const ConsultarGuiasRemision: React.FC = () => {
           <IonButton onClick={handleAddItem}>Add Item</IonButton>
         </IonItem>
 
-        <IonList>
+        {/* <IonList>
           {items.map((item) => (
             <IonItem key={item._id}>
               <IonInput
@@ -131,10 +140,59 @@ const ConsultarGuiasRemision: React.FC = () => {
               <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>
                 <IonIcon icon={trash} />
               </IonButton>
+              <IonButton onClick={() => window.print()}>
+                <IonIcon icon={print} />
+              </IonButton>
             </IonItem>
           ))}
         </IonList>
+        <IonGrid fixed>
+          <IonRow>
+            <IonCol>
+              <IonCard color="secondary">
+                <IonCardHeader>
+                  <IonCardSubtitle />
+                  <IonCardTitle />
+                </IonCardHeader>
+                <IonCardContent>
+
+                </IonCardContent>
+              </IonCard>
+            </IonCol>
+          </IonRow>
+        </IonGrid> */}
+        <IonGrid>
+          <IonRow>
+            {items.map((item) => (
+              <IonCol key={item._id} size="12" size-xs="12" size-sm="6" size-md="4" size-lg="3" size-xl="3">
+                <IonCard color="primary">
+                  <IonCardHeader>
+                    <IonCardSubtitle>{item.Descripcion}</IonCardSubtitle>
+                    <IonCardTitle>{item.Nombre}</IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    {item.DNI}
+                  </IonCardContent>
+                  <div style={{ marginTop: 'auto' }}>
+                    <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>
+                      <IonIcon icon={trash} />
+                    </IonButton>
+                    <IonButton onClick={() => setSelectedItem(item)}>
+                      <IonIcon icon={eye} />
+                    </IonButton>
+                  </div>
+                </IonCard>
+              </IonCol>
+            ))}
+          </IonRow>
+        </IonGrid>
       </IonContent>
+
+      <div className={`print-preview ${selectedItem ? 'visible' : ''}`}>
+        {selectedItem && (
+          <GuiaRemisionPrintPreview guiaRemisionData={selectedItem} onBackButtonClick={handleBackButtonClick}/>
+        )}
+      </div>
     </IonPage>
   );
 };

@@ -42,7 +42,7 @@ export const pouchdbService = {
     getAllDocumentsByType: async (type: string) => {
 
         const selector = {
-            Tipo: type
+            Collection: type
         };
 
         const options = {
@@ -56,7 +56,7 @@ export const pouchdbService = {
     },
     findAllDocumentsByType: async (type: string) => {
         const selector = {
-            Tipo: type
+            Collection: type
         };
          
         const response = await localDB.find({

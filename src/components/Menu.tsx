@@ -121,6 +121,18 @@ const appPages: AppPage[] = [
     mdIcon: fileTraySharp,
   },
   {
+    title: 'Transportistas',
+    url: '/page/transportistas',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
+    title: 'Conductores',
+    url: '/page/conductores',
+    iosIcon: people,
+    mdIcon: peopleSharp,
+  },
+  {
     title: 'Documentos Fiscales',
     url: '/page/cai',
     iosIcon: reader,
@@ -150,7 +162,7 @@ const Menu: React.FC = () => {
   const location = useLocation();
 
   return (
-    <IonMenu contentId="main" type="overlay">
+    <IonMenu contentId="main" type="overlay" className="hide-menu-print">
       <IonContent>
         <IonList id="inbox-list">
           <IonListHeader>MOCAB.NET</IonListHeader>
