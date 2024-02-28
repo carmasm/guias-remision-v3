@@ -1,7 +1,7 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { pouchdbService } from '../../pouchdbService';
-
+import { useHistory } from 'react-router';
 
 const NuevaGuiaRemision: React.FC = () => {
 
@@ -25,12 +25,13 @@ const NuevaGuiaRemision: React.FC = () => {
   const [cantidad, setCantidad] = useState<any>(null);
 
   const [toast, setToast] = useState(false);
+  const history = useHistory();
 
   // const [defaultValue, setDefaultValue] = useState('1623d582b77ef85496e3259a7b05532e'); //FRUTA FRESCA DE PALMA AFRICANA
 
   useEffect(() => {
     console.log('NuevaGuiaRemision')
-    pouchdbService.findAllDocumentsByType('Remitentes')
+    pouchdbService.findAllDocumentsByType('Remitentes', 'Nombre', 'asc')
       .then(data => {
         setRemitentes(data)
         // console.log(data)
@@ -39,7 +40,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Destinatarios')
+    pouchdbService.findAllDocumentsByType('Destinatarios', 'Nombre', 'asc')
       .then(data => {
         setDestinatarios(data)
         // console.log(data)
@@ -48,7 +49,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('CentrosdeRecoleccion')
+    pouchdbService.findAllDocumentsByType('CentrosdeRecoleccion', 'Nombre', 'asc')
       .then(data => {
 
         setPuntosdePartida(data)
@@ -60,7 +61,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Configuraciones')
+    pouchdbService.findAllDocumentsByType('Configuraciones', 'Valor', 'asc')
       .then(data => {
         setmotivosDeTraspaso(data)
         // console.log(data)
@@ -69,7 +70,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Productos')
+    pouchdbService.findAllDocumentsByType('Productos', 'Descripcion', 'asc')
       .then(data => {
         setProductos(data)
         // console.log(data)
@@ -78,7 +79,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Transportistas')
+    pouchdbService.findAllDocumentsByType('Transportistas', 'Nombre', 'asc')
       .then(data => {
         setTransportistas(data)
         // console.log(data)
@@ -87,7 +88,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Conductores')
+    pouchdbService.findAllDocumentsByType('Conductores', 'NombreCompleto', 'asc')
       .then(data => {
         setConductores(data)
         // console.log(data)
@@ -102,6 +103,9 @@ const NuevaGuiaRemision: React.FC = () => {
 
 
   const handleSaveItem = () => {
+
+    const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
+    const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
 
     const newDocument = {
             IdCodigo:              '',
@@ -125,11 +129,12 @@ const NuevaGuiaRemision: React.FC = () => {
             IdDocumentoFiscal:     '',
             IdUsuario:             '',
             NombreUsuario:         '',
-            FechaTransaccion:      new Date(),
+            FechaTransaccion:      fechaTransaccion,
             FechaLimiteEmision:    '',
             CAI:                   '',
             NumeracionCorrelativa: 0,
             RandoAutorizado:       '',
+            Estado:                'EMITIDA',
             Cantidad:              Number(cantidad),
             Collection:            'GuiasRemision'
     }
@@ -147,6 +152,8 @@ const NuevaGuiaRemision: React.FC = () => {
         setCantidad(null);
 
         setToast(true);
+
+        history.push("/page/consultar-guias-remision");
       });
   };
 

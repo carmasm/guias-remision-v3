@@ -20,7 +20,7 @@ const ConsultarGuiasRemision: React.FC = () => {
 
   useEffect(() => {
     // Load documents from CouchDB
-    pouchdbService.findAllDocumentsByType('GuiasRemision')
+    pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc')
       .then(data => {
         setItems(data)
         console.log(data)
@@ -48,7 +48,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.addDocument(newItemData)
       .then(() => {
         // After adding, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision');
+        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setItems(data);
@@ -64,7 +64,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.updateDocument(editItem)
       .then(() => {
         // After updating, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision');
+        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setItems(data);
@@ -78,7 +78,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.deleteDocument(id, rev)
       .then(() => {
         // After deleting, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision');
+        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setItems(data);
@@ -89,6 +89,27 @@ const ConsultarGuiasRemision: React.FC = () => {
     setSelectedItem(null); // Hide the print preview by setting selectedItem to null
 };
 
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+
+  // Get day, month, year
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+  const year = date.getFullYear();
+
+  // Get hours and minutes
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  // Determine if it's AM or PM
+  const amOrPm = hours >= 12 ? 'PM' : 'AM';
+  
+  // Convert hours to 12-hour format
+  hours = hours % 12 || 12;
+
+  return `${day}/${month}/${year} ${hours}:${minutes} ${amOrPm}`;
+}
+
   return (
     <IonPage>
       <IonHeader className="hide-content-print">
@@ -96,7 +117,7 @@ const ConsultarGuiasRemision: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Google Cloud Firestore CRUD v4</IonTitle>
+          <IonTitle>Apache CouchDB v3.3</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -166,12 +187,15 @@ const ConsultarGuiasRemision: React.FC = () => {
             {items.map((item) => (
               <IonCol key={item._id} size="12" size-xs="12" size-sm="6" size-md="4" size-lg="3" size-xl="3">
                 <IonCard color="primary">
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', color: 'white', zIndex: '10' }}>
+                    {item.NumeracionCorrelativa}
+                  </div>
                   <IonCardHeader>
-                    <IonCardSubtitle>{item.Descripcion}</IonCardSubtitle>
-                    <IonCardTitle>{item.Nombre}</IonCardTitle>
+                    <IonCardSubtitle>{formatDate(item.FechaTransaccion)}</IonCardSubtitle>
+                    <IonCardTitle>{item.NombreDestinatario}</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    {item.DNI}
+                    {item.NombrePuntoDeDestino}
                   </IonCardContent>
                   <div style={{ marginTop: 'auto' }}>
                     <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>

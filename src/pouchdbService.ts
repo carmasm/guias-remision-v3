@@ -54,14 +54,25 @@ export const pouchdbService = {
 
         return response.rows;
     },
-    findAllDocumentsByType: async (type: string) => {
+    findAllDocumentsByType: async (collection: string, sortField: string, sortType: 'asc' | 'desc') => {
         const selector = {
-            Collection: type
+            Collection: collection,
+            [sortField]: {$exists: true}
         };
          
-        const response = await localDB.find({
-            selector: selector
-        });
+        // const response = await localDB.find({
+        //     selector: selector,
+        //     sort: [{ [sortField]: 'asc' }]
+        // });
+
+        const response = await localDB.createIndex({
+            index: {fields: [sortField]}
+          }).then(function () {
+            return localDB.find({
+              selector: selector,
+              sort: [{ [sortField]: sortType }]
+            });
+          });
 
         // debugger
         return response.docs;
