@@ -25,114 +25,149 @@ const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonCl
         return `${day}/${month}/${year} ${hours}:${minutes} ${amOrPm}`;
     }
 
+    function extractDay(dateString: string): string {
+        const date = new Date(dateString);
+        return String(date.getDate()).padStart(2, '0');
+    }
+
+    function extractMonth(dateString: string): string {
+        const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const date = new Date(dateString);
+        return months[date.getMonth()];
+    }
+
+    function extractYear(dateString: string): string {
+        const date = new Date(dateString);
+        return String(date.getFullYear());
+    }
+
     return (
-        <IonContent>
-        <div className="invoice-box">
-            <table cellPadding="0" cellSpacing="0">
-                <tbody>
-                    <tr className="top">
-                        <td colSpan={2}>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td className="title">
-                                        <img
-                                            src="https://sparksuite.github.io/simple-html-invoice-template/images/logo.png"
-                                            style={{ width: '100%', maxWidth: '300px' }} />
-                                    </td>
+        <div className="container">
+            <div className="invoice-box">
+                <div className="table">
+                    <div className="top trh">
+                        <div className="title td">
+                            <h1>AGOINCA S. DE R.L.</h1>
+                            <h3>AGRO INVERSIONES DEL CARIBE S. DE R.L.</h3>
+                            <h6>Col. Trejo, 11 Calle, 27 Y 29 Ave., Frente al Parque Chahin, San Pedro Sula, Cortés</h6>
+                            <h6>Teléfono: 2510-3280 RTN: 05019019181991 Correo: agroinca@gmail.com</h6>
+                            <h6>CAI: B3F076-2BA5FF-1A4DAB-A4DFA3-B4B655-32</h6>
+                        </div>
 
-                                    <td>
-                                        Invoice #: 123<br />
-                                        Created: January 1, 2023<br />
-                                        Due: February 1, 2023
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+                        <div className="td">
+                            <h6>GUÍA DE REMISIÓN</h6>
+                            <h6>000-001-08-00</h6><br />
+                            <h4>No 000000</h4>
+                        </div>
+                    </div>
 
-                    <tr className="information">
-                        <td colSpan={2}>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>
-                                        Sparksuite, Inc.<br />
-                                        12345 Sunny Road<br />
-                                        Sunnyville, CA 12345
-                                    </td>
+                    <div className="dt">San Pedro Sula, Cortés {extractDay(guiaRemisionData.FechaTransaccion)} de {extractMonth(guiaRemisionData.FechaTransaccion)} del {extractYear(guiaRemisionData.FechaTransaccion)}</div>
 
-                                    <td>
-                                        Acme Corp.<br />
-                                        John Doe<br />
-                                        john@example.com
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+                    <div className="information trh">
+                        <div className="td">
+                            Remitente: {guiaRemisionData.NombreRemitente} 
+                        </div>
 
-                    <tr className="heading">
-                        <td>Payment Method</td>
+                        <div className="td">
+                            RTN/N. Ident.:
+                        </div>
 
-                        <td>Check #</td>
-                    </tr>
+                        <div className="td">
+                            Destinatario: {guiaRemisionData.NombreDestinatario}
+                        </div>
 
-                    <tr className="details">
-                        <td>Check</td>
+                        <div className="td">
+                            RTN/N. Ident.:
+                        </div>
 
-                        <td>1000</td>
-                    </tr>
+                        <div className="td">
+                            Punto de Partida: {guiaRemisionData.NombrePuntoDePartida}
+                        </div>
 
-                    <tr className="heading">
-                        <td>Item</td>
+                        <div className="td">
+                        </div>
 
-                        <td>Price</td>
-                    </tr>
+                        <div className="td">
+                            Punto de Destino: {guiaRemisionData.NombrePuntoDeDestino}
+                        </div>
 
-                    <tr className="item">
-                        <td>Website design</td>
+                        <div className="td">
+                        </div>
+                        <div className="td">
+                            Motivo de Traslado: {guiaRemisionData.DescripcionMotivo}
+                        </div>
 
-                        <td>$300.00</td>
-                    </tr>
+                        <div className="td">
+                        </div>
 
-                    <tr className="item">
-                        <td>Hosting (3 months)</td>
+                        <div className="td">
+                            Fecha de Inicio del Traslado:_______________
+                        </div>
 
-                        <td>$75.00</td>
-                    </tr>
+                        <div className="td">
+                            Fecha de Terminación del Traslado:__________
+                        </div>
+                    </div>
 
-                    <tr className="item last">
-                        <td>Domain name (1 year)</td>
+                    <div className="heading tr">
+                        <div className="td">DESCRIPCIÓN</div>
 
-                        <td>$10.00</td>
-                    </tr>
+                        <div className="td">CANTIDAD</div>
+                    </div>
 
-                    <tr className="total">
-                        <td></td>
+                    <div className="details tr">
+                        <div className="td">{guiaRemisionData.DescripcionProducto}</div>
 
-                        <td>Total: $385.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-            <div className="buttons-container">
-                <IonButton onClick={onBackButtonClick}>
-                    <IonIcon icon={arrowBackOutline} />
-                    Back
-                </IonButton>
-                <IonButton onClick={() => window.print()}>
-                    <IonIcon icon={printOutline} />
-                    Print
-                </IonButton>
-                <IonButton>
-                    <IonIcon icon={downloadOutline} />
-                    Download
-                </IonButton>
+                        <div className="td">{guiaRemisionData.Cantidad}</div>
+                    </div>
+
+                    <div>Datos del Transportista</div>
+
+                    <div className="item tr">
+                        <div className="td">Denominación / Nombres y Apellidos: {guiaRemisionData.NombreTransportista}</div>
+
+                        <div className="td">RTN/N. Ident.:</div>
+                    </div>
+
+                    <div>Datos de la Unidad de Transporte y Conductor</div>
+
+                    <div className="item tr">
+                        <div className="td">Nombres y Apellidos: {guiaRemisionData.NombreConductor}</div>
+
+                        <div className="td">RTN/N. Ident.:</div>
+                    </div>
+
+                    <div className="item last tr">
+                        <div className="td">Marca y No. de Placa:</div>
+
+                        <div className="td">Licencia de Conducir:</div>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <div className="footer">
+                        <div className="td left">Rango Autorizado: 000-001-08-00003101 - 000-001-08-00003500</div>
+                        <div className="td">________________________</div>
+                        <div className="td left">Fecha de Recepción: 06/01/2024 - Fecha Límite de Emisión: 01/06/2025</div>
+                        <div className="td">Firma</div>
+                    </div>
+                </div>
+                <div className="buttons-container">
+                    <IonButton onClick={onBackButtonClick}>
+                        <IonIcon icon={arrowBackOutline} />
+                        Back
+                    </IonButton>
+                    <IonButton onClick={() => window.print()}>
+                        <IonIcon icon={printOutline} />
+                        Print
+                    </IonButton>
+                    <IonButton>
+                        <IonIcon icon={downloadOutline} />
+                        Download
+                    </IonButton>
+                </div>
             </div>
-        </IonContent>
+        </div>
     );
 };
 

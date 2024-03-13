@@ -12,6 +12,7 @@
   
   .print-preview.visible {
     display: block;
+    overflow: auto;
   }
   
 
