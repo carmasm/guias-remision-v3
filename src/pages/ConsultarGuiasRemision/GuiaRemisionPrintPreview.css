@@ -184,6 +184,30 @@
         display: block;
         text-align: center;
     }
+
+    .subtitle {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .invoice-box .table .tr.item {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .invoice-box .table .tr.item.last {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .invoice-box .table .footer {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
 }
 
 .buttons-container {

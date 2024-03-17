@@ -6,12 +6,14 @@ import { pouchdbService } from '../../pouchdbService';
 import { pencil, trash, print, eye } from 'ionicons/icons';
 import GuiaRemisionPrintPreview from './GuiaRemisionPrintPreview';
 import './ConsultarGuiasRemision.css';
+import { useLocation } from 'react-router';
 
 const ConsultarGuiasRemision: React.FC = () => {
 
   const [items, setItems] = useState<any[]>([]);
   const [newItem, setNewItem] = useState('');
   const [editItem, setEditItem] = useState<any[]>([]);
+  const location = useLocation<any>();
 
   // const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -30,7 +32,7 @@ const ConsultarGuiasRemision: React.FC = () => {
       });
     // console.count()
     // debugger
-  }, []);
+  }, [location.key]);
 
   const handleAddItem = () => {
 

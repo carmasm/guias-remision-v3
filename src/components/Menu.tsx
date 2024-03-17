@@ -92,7 +92,7 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Códigos',
-    url: '/page/Codigos',
+    url: '/page/codigos',
     iosIcon: people,
     mdIcon: peopleSharp,
   },

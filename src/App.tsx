@@ -28,6 +28,16 @@ import ConsultarGuiasRemisionPage from './pages/ConsultarGuiasRemision/Consultar
 import DocumentosFiscalesPage from './pages/CAI/DocumentosFiscales';
 import NuevaGuiaRemisionPage from './pages/NuevaGuiaRemision/NuevaGuiaRemision';
 import ListaUsuariosPage from './pages/Usuarios/ListaUsuarios';
+import Aprobaciones from './pages/Aprobaciones/Aprobaciones';
+import Codigos from './pages/Codigos/Codigos';
+import Remitentes from './pages/Remitentes/Remitentes';
+import Destinatarios from './pages/Destinatarios/Destinatarios';
+import Productores from './pages/Productores/Productores';
+import Productos from './pages/Productos/Productos';
+import Transportistas from './pages/Transportistas/Transportistas';
+import Conductores from './pages/Conductores/Conductores';
+import CentrosDeRecoleccion from './pages/CentrosDeRecoleccion/CentrosDeRecoleccion';
+import Configuraciones from './pages/Configuraciones/Configuraciones';
 
 setupIonicReact();
 
@@ -66,6 +76,16 @@ const App: React.FC = () => {
             <Route path="/page/cai" component={DocumentosFiscalesPage} />
             <Route path="/page/nueva-guia-remision" component={NuevaGuiaRemisionPage} />
             <Route path="/page/usuarios" component={ListaUsuariosPage} />
+            <Route path="/page/aprobaciones" component={Aprobaciones} />
+            <Route path="/page/codigos" component={Codigos} />
+            <Route path="/page/remitentes" component={Remitentes} />
+            <Route path="/page/destinatarios" component={Destinatarios} />
+            <Route path="/page/productores" component={Productores} />
+            <Route path="/page/productos" component={Productos} />
+            <Route path="/page/transportistas" component={Transportistas} />
+            <Route path="/page/conductores" component={Conductores} />
+            <Route path="/page/centros-rec" component={CentrosDeRecoleccion} />
+            <Route path="/page/configuraciones" component={Configuraciones} />
           </IonRouterOutlet>
         </IonSplitPane>
         {/* <Redirect exact from="/" to="/page/login" /> // Al darle refresh regresa al login en lugar de quedarse en la ruta que está

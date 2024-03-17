@@ -1,9 +1,10 @@
 import { IonButton, IonContent, IonIcon } from '@ionic/react';
 import './GuiaRemisionPrintPreview.css';
 import { arrowBackOutline, downloadOutline, printOutline } from 'ionicons/icons';
+import { useEffect } from 'react';
 
 const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonClick: () => void }> = ({ guiaRemisionData, onBackButtonClick }) => {
-
+    
     function formatDate(dateString: string) {
         const date = new Date(dateString);
 
@@ -121,7 +122,7 @@ const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonCl
                         <div className="td">{guiaRemisionData.Cantidad}</div>
                     </div>
 
-                    <div>Datos del Transportista</div>
+                    <div className="subtitle">Datos del Transportista</div>
 
                     <div className="item tr">
                         <div className="td">Denominación / Nombres y Apellidos: {guiaRemisionData.NombreTransportista}</div>
@@ -129,7 +130,7 @@ const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonCl
                         <div className="td">RTN/N. Ident.:</div>
                     </div>
 
-                    <div>Datos de la Unidad de Transporte y Conductor</div>
+                    <div className="subtitle">Datos de la Unidad de Transporte y Conductor</div>
 
                     <div className="item tr">
                         <div className="td">Nombres y Apellidos: {guiaRemisionData.NombreConductor}</div>
