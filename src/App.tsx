@@ -28,6 +28,7 @@ import ConsultarGuiasRemisionPage from './pages/ConsultarGuiasRemision/Consultar
 import DocumentosFiscalesPage from './pages/CAI/DocumentosFiscales';
 import NuevaGuiaRemisionPage from './pages/NuevaGuiaRemision/NuevaGuiaRemision';
 import ListaUsuariosPage from './pages/Usuarios/ListaUsuarios';
+import DetalleUsuario from './pages/Usuarios/DetalleUsuario';
 import Aprobaciones from './pages/Aprobaciones/Aprobaciones';
 import Codigos from './pages/Codigos/Codigos';
 import Remitentes from './pages/Remitentes/Remitentes';
@@ -75,7 +76,8 @@ const App: React.FC = () => {
             <Route path="/page/consultar-guias-remision" component={ConsultarGuiasRemisionPage} />
             <Route path="/page/cai" component={DocumentosFiscalesPage} />
             <Route path="/page/nueva-guia-remision" component={NuevaGuiaRemisionPage} />
-            <Route path="/page/usuarios" component={ListaUsuariosPage} />
+            <Route path="/page/usuarios" component={ListaUsuariosPage} exact={true}/>
+            <Route path="/page/usuarios/:userId" component={DetalleUsuario} />
             <Route path="/page/aprobaciones" component={Aprobaciones} />
             <Route path="/page/codigos" component={Codigos} />
             <Route path="/page/remitentes" component={Remitentes} />

@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { pouchdbService } from '../../pouchdbService';
 import { useHistory } from 'react-router';
@@ -159,7 +159,7 @@ const NuevaGuiaRemision: React.FC = () => {
 
   return (
     <IonPage>
-      <IonToast isOpen={toast} onDidDismiss={() => setToast(false)} message="Documento guardado!" duration={1500} />
+      <IonToast isOpen={toast} onDidDismiss={() => setToast(false)} message="¡Documento guardado!" duration={200} color={'success'} />
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -242,7 +242,24 @@ const NuevaGuiaRemision: React.FC = () => {
             ))}
           </IonSelect>
         </IonItem>
-        <IonButton expand="block" onClick={handleSaveItem}>Salvar</IonButton>
+        <IonButton id="present-alert" expand="block">Salvar</IonButton>
+        <IonAlert
+          // header="Alert!"
+          message="¿Está seguro que desea salvar los datos?"
+          trigger="present-alert"
+          buttons={[
+            {
+              text: 'No',
+              role: 'cancel',
+            },
+            {
+              text: 'Si',
+              role: 'confirm',
+              handler: handleSaveItem,
+            },
+          ]}
+          // onDidDismiss={({ detail }) => console.log(`Dismissed with role: ${detail.role}`)}
+        ></IonAlert>
       </IonContent>
     </IonPage>
   );

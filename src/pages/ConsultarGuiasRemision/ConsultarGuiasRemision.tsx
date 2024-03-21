@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonRow, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
 import { useParams } from 'react-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ExploreContainer from '../../components/ExploreContainer';
@@ -10,7 +10,7 @@ import { useLocation } from 'react-router';
 
 const ConsultarGuiasRemision: React.FC = () => {
 
-  const [items, setItems] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [newItem, setNewItem] = useState('');
   const [editItem, setEditItem] = useState<any[]>([]);
   const location = useLocation<any>();
@@ -24,7 +24,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     // Load documents from CouchDB
     pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc')
       .then(data => {
-        setItems(data)
+        setDocuments(data)
         console.log(data)
       })
       .catch(error => {
@@ -53,7 +53,7 @@ const ConsultarGuiasRemision: React.FC = () => {
         return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
-        setItems(data);
+        setDocuments(data);
         setNewItem('');
       });
   };
@@ -69,7 +69,7 @@ const ConsultarGuiasRemision: React.FC = () => {
         return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
-        setItems(data);
+        setDocuments(data);
         setEditItem([]);
       });
   };
@@ -83,34 +83,34 @@ const ConsultarGuiasRemision: React.FC = () => {
         return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
-        setItems(data);
+        setDocuments(data);
       });
   };
 
   const handleBackButtonClick = () => {
     setSelectedItem(null); // Hide the print preview by setting selectedItem to null
-};
+  };
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
 
-  // Get day, month, year
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-  const year = date.getFullYear();
+    // Get day, month, year
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
 
-  // Get hours and minutes
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  
-  // Determine if it's AM or PM
-  const amOrPm = hours >= 12 ? 'PM' : 'AM';
-  
-  // Convert hours to 12-hour format
-  hours = hours % 12 || 12;
+    // Get hours and minutes
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
 
-  return `${day}/${month}/${year} ${hours}:${minutes} ${amOrPm}`;
-}
+    // Determine if it's AM or PM
+    const amOrPm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert hours to 12-hour format
+    hours = hours % 12 || 12;
+
+    return `${day}/${month}/${year} ${hours}:${minutes} ${amOrPm}`;
+  }
 
   return (
     <IonPage>
@@ -121,17 +121,20 @@ function formatDate(dateString: string) {
           </IonButtons>
           <IonTitle>Apache CouchDB v3.3</IonTitle>
         </IonToolbar>
+        {/* <IonToolbar>
+          <IonSearchbar />
+        </IonToolbar> */}
       </IonHeader>
 
       <IonContent className="hide-content-print">
-        <IonItem>
+        {/* <IonItem>
           <IonInput
             placeholder="New Item"
             value={newItem}
             onIonInput={(e) => setNewItem(e.detail.value!)}
           />
           <IonButton onClick={handleAddItem}>Add Item</IonButton>
-        </IonItem>
+        </IonItem> */}
 
         {/* <IonList>
           {items.map((item) => (
@@ -186,24 +189,24 @@ function formatDate(dateString: string) {
         </IonGrid> */}
         <IonGrid>
           <IonRow>
-            {items.map((item) => (
-              <IonCol key={item._id} size="12" size-xs="12" size-sm="6" size-md="4" size-lg="3" size-xl="3">
+            {documents.map((doc) => (
+              <IonCol key={doc._id} size="12" size-xs="12" size-sm="6" size-md="4" size-lg="3" size-xl="3">
                 <IonCard color="primary">
                   <div style={{ position: 'absolute', top: '10px', right: '10px', color: 'white', zIndex: '10' }}>
-                    {item.NumeracionCorrelativa}
+                    {doc.NumeracionCorrelativa}
                   </div>
                   <IonCardHeader>
-                    <IonCardSubtitle>{formatDate(item.FechaTransaccion)}</IonCardSubtitle>
-                    <IonCardTitle>{item.NombreDestinatario}</IonCardTitle>
+                    <IonCardSubtitle>{formatDate(doc.FechaTransaccion)}</IonCardSubtitle>
+                    <IonCardTitle>{doc.NombreDestinatario}</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    {item.NombrePuntoDeDestino}
+                    {doc.NombrePuntoDeDestino}
                   </IonCardContent>
                   <div style={{ marginTop: 'auto' }}>
-                    <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>
+                    <IonButton onClick={() => handleDeleteItem(doc._id, doc._rev)}>
                       <IonIcon icon={trash} />
                     </IonButton>
-                    <IonButton onClick={() => setSelectedItem(item)}>
+                    <IonButton onClick={() => setSelectedItem(doc)}>
                       <IonIcon icon={eye} />
                     </IonButton>
                   </div>
@@ -216,7 +219,7 @@ function formatDate(dateString: string) {
 
       <div className={`print-preview ${selectedItem ? 'visible' : ''}`}>
         {selectedItem && (
-          <GuiaRemisionPrintPreview guiaRemisionData={selectedItem} onBackButtonClick={handleBackButtonClick}/>
+          <GuiaRemisionPrintPreview guiaRemisionData={selectedItem} onBackButtonClick={handleBackButtonClick} />
         )}
       </div>
     </IonPage>
