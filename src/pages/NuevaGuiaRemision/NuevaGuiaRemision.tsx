@@ -1,7 +1,7 @@
 import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { pouchdbService } from '../../pouchdbService';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 
 const NuevaGuiaRemision: React.FC = () => {
 
@@ -25,13 +25,14 @@ const NuevaGuiaRemision: React.FC = () => {
   const [cantidad, setCantidad] = useState<any>(null);
 
   const [toast, setToast] = useState(false);
+  const location = useLocation();
   const history = useHistory();
 
   // const [defaultValue, setDefaultValue] = useState('1623d582b77ef85496e3259a7b05532e'); //FRUTA FRESCA DE PALMA AFRICANA
 
   useEffect(() => {
     console.log('NuevaGuiaRemision')
-    pouchdbService.findAllDocumentsByType('Remitentes', 'Nombre', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Remitentes', 'Nombre', 'asc')
       .then(data => {
         setRemitentes(data)
         // console.log(data)
@@ -40,7 +41,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Destinatarios', 'Nombre', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Destinatarios', 'Nombre', 'asc')
       .then(data => {
         setDestinatarios(data)
         // console.log(data)
@@ -49,7 +50,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('CentrosdeRecoleccion', 'Nombre', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('CentrosdeRecoleccion', 'Nombre', 'asc')
       .then(data => {
 
         setPuntosdePartida(data)
@@ -61,7 +62,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Configuraciones', 'Valor', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Configuraciones', 'Valor', 'asc')
       .then(data => {
         setmotivosDeTraspaso(data)
         // console.log(data)
@@ -70,7 +71,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Productos', 'Descripcion', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Productos', 'Descripcion', 'asc')
       .then(data => {
         setProductos(data)
         // console.log(data)
@@ -79,7 +80,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Transportistas', 'Nombre', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Transportistas', 'Nombre', 'asc')
       .then(data => {
         setTransportistas(data)
         // console.log(data)
@@ -88,7 +89,7 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    pouchdbService.findAllDocumentsByType('Conductores', 'NombreCompleto', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Conductores', 'NombreCompleto', 'asc')
       .then(data => {
         setConductores(data)
         // console.log(data)
@@ -99,13 +100,26 @@ const NuevaGuiaRemision: React.FC = () => {
 
     // debugger
     // console.log(remitentes);
-  }, []);
+
+    const doctoFiscal = pouchdbService.findAllDocumentsBy([['Collection', 'DocumentosFiscales'], ['Activo', false]])
+    .then(data => {
+      console.log({data})
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+
+  }, [location.key]);
 
 
   const handleSaveItem = () => {
 
     const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
     const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
+
+    const doctoFiscal = pouchdbService.findAllDocumentsBy([['Collection', 'DocumentosFiscales'], ['Activo', true]]);
+
+    console.table(doctoFiscal);
 
     const newDocument = {
             IdCodigo:              '',
@@ -159,7 +173,7 @@ const NuevaGuiaRemision: React.FC = () => {
 
   return (
     <IonPage>
-      <IonToast isOpen={toast} onDidDismiss={() => setToast(false)} message="¡Documento guardado!" duration={200} color={'success'} />
+      <IonToast isOpen={toast} onDidDismiss={() => setToast(false)} message="¡Documento guardado!" duration={2000} color={'success'} />
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">

@@ -54,7 +54,7 @@ export const pouchdbService = {
 
         return response.rows;
     },
-    findAllDocumentsByType: async (collection: string, sortField: string, sortType: 'asc' | 'desc') => {
+    findAllDocumentsByCollectionSorted: async (collection: string, sortField: string, sortType: 'asc' | 'desc') => {
         const selector = {
             Collection: collection,
             [sortField]: {$exists: true}
@@ -75,6 +75,24 @@ export const pouchdbService = {
           });
 
         // debugger
+        return response.docs;
+    },
+    findAllDocumentsBy: async (criteria: Array<[string, any]>) => {
+        // Constructing the selector object based on the criteria
+        const selector: { [key: string]: any } = {};
+
+        // Loop through the criteria array and construct the selector
+        criteria.forEach(([fieldName, value]) => {
+            selector[fieldName] = value;
+        });
+
+        const options = {
+            selector: selector,
+            include_docs: true
+        };
+
+        const response = await localDB.find(options);
+
         return response.docs;
     },
     addDocument: async (document: any) => {

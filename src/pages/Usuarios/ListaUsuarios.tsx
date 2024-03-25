@@ -12,7 +12,7 @@ const ListaUsuarios: React.FC<RouteComponentProps> = ({history}) => {
 
   useEffect(() => {
 
-    pouchdbService.findAllDocumentsByType('Usuarios', 'Nombre', 'asc')
+    pouchdbService.findAllDocumentsByCollectionSorted('Usuarios', 'Nombre', 'asc')
       .then(data => {
         setUsuarios(data)
         console.log(data)
@@ -54,12 +54,14 @@ const ListaUsuarios: React.FC<RouteComponentProps> = ({history}) => {
                       pathname: `/page/usuarios/${usuario._id}`,
                       state: {
                         _id: usuario._id,
+                        _rev: usuario._rev,
+                        IdCodigo: usuario.IdCodigo,
                         Nombre: usuario.Nombre,
                         Apellido: usuario.Apellido,
                         Usuario: usuario.Usuario,
                         Contrasena: usuario.Contrasena,
+                        CContrasena: usuario.CContrasena,
                         CorrelativosAsignados: usuario.CorrelativosAsignados,
-                        // acopio: usuario.acopio,
                         Rol: usuario.Rol,
                         Activo: usuario.Activo
                       }
@@ -73,7 +75,7 @@ const ListaUsuarios: React.FC<RouteComponentProps> = ({history}) => {
           }
         </IonList>
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton>
+          <IonFabButton routerLink="/page/usuarios/0">
             {/* <IonRouterLink routerDirection="forward" routerLink={`/item/${item.id}`}> */}
             <IonIcon icon={add} />
           </IonFabButton>

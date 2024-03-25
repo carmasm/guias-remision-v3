@@ -22,7 +22,7 @@ const ConsultarGuiasRemision: React.FC = () => {
 
   useEffect(() => {
     // Load documents from CouchDB
-    pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc')
+    pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc')
       .then(data => {
         setDocuments(data)
         console.log(data)
@@ -50,7 +50,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.addDocument(newItemData)
       .then(() => {
         // After adding, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
+        return pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setDocuments(data);
@@ -66,7 +66,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.updateDocument(editItem)
       .then(() => {
         // After updating, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
+        return pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setDocuments(data);
@@ -80,7 +80,7 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.deleteDocument(id, rev)
       .then(() => {
         // After deleting, fetch the updated list
-        return pouchdbService.findAllDocumentsByType('GuiasRemision', 'FechaTransaccion', 'desc');
+        return pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc');
       })
       .then((data) => {
         setDocuments(data);

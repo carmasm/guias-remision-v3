@@ -1,6 +1,7 @@
-import { IonBackButton, IonButton, IonButtons, IonCol, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
+import { IonBackButton, IonButton, IonButtons, IonCol, IonContent, IonHeader, IonInput, IonItem, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToast, IonToggle, IonToolbar } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { RouteComponentProps, useLocation } from 'react-router';
+import { pouchdbService } from '../../pouchdbService';
 
 interface UserDetailPageProps extends RouteComponentProps<{
     id: string;
@@ -8,45 +9,142 @@ interface UserDetailPageProps extends RouteComponentProps<{
 
 const DetalleUsuario: React.FC<UserDetailPageProps> = ({ match, history }) => {
 
-    const [idUsuario, setIdUsuario] = useState(0);
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
-    const [usuario, setUsuario] = useState('');
-    const [contrasena, setContrasena] = useState('');
-    const [cContrasena, setcContrasena] = useState('');
-    const [correlativosAsignados, setCorrelativosAsignados] = useState(0);
-    const [correlativosDisponibles, setCorrelativosDisponibles] = useState(150);
-    const [rol, setRol] = useState<string>();
-    const [acopio, setAcopio] = useState('');
-    const [activo, setActivo] = useState(true);
     const [iserror, setIserror] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
+    const [toast, setToast] = useState(false);
+
+    const [userData, setUserData] = useState({
+        _id: null,
+        _rev: null,
+        IdCodigo: null,
+        Nombre: null,
+        Apellido: null,
+        Usuario: null,
+        Contrasena: null,
+        CContrasena: null,
+        CorrelativosAsignados: null,
+        CorrelativosDisponibles: 150,
+        Rol: null,
+        Activo: null,
+        Collection: 'Usuarios'
+    });
 
     const location = useLocation<any>();
 
     useEffect(() => {
 
+        // debugger
         if (location.state != undefined) {
-            setIdUsuario(location.state._id);
-            setNombre(location.state.Nombre);
-            setApellido(location.state.Apellido);
-            setUsuario(location.state.Usuario);
-            setContrasena(location.state.Contrasena);
-            setcContrasena(location.state.Contrasena);
-            setCorrelativosAsignados(location.state.CorrelativosAsignados);
-            // setAcopio(location.state.acopio);
-            setRol(location.state.Rol);
-            setActivo(location.state.Activo);
+
+            //¡¡ REEMPLAZAR TODAS LAS PROPIEDADES POR UN SPREAD OPERATOR !! ??
+            setUserData({
+                _id: location.state._id,
+                _rev: location.state._rev,
+                IdCodigo: location.state.idCodigo,
+                Nombre: location.state.Nombre,
+                Apellido: location.state.Apellido,
+                Usuario: location.state.Usuario,
+                Contrasena: location.state.Contrasena,
+                CContrasena: location.state.CContrasena,
+                CorrelativosAsignados: location.state.CorrelativosAsignados,
+                CorrelativosDisponibles: 150,
+                Rol: location.state.Rol,
+                Activo: location.state.Activo,
+                Collection: 'Usuarios'
+            });
+
+            debugger
         }
 
     }, []);
 
-    function handleSaveNewUser() {
+    function handleSaveUser() {
+        if (userData._id === null) {
+
+            console.log('Saving new user...');
+
+            const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
+            const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
+
+            const newUser = {
+                ...userData,
+                 FechaTransaccion: fechaTransaccion
+            }
+
+            debugger
+
+            pouchdbService.addDocument(newUser)
+                .then(() => {
+                    setToast(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        } else {
+
+            if (!userData) return;
+
+            console.log('Updating user...');
+
+            const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
+            const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
+
+            const updatedUser = {
+                ...userData,
+                 FechaTransaccion: fechaTransaccion
+            }
+
+            debugger
+
+            pouchdbService.updateDocument(updatedUser)
+                .then(() => {
+                    setToast(true);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        }
+    }
+
+    function handleInputChange(propertyName: string, value: any) {
+        setUserData(prevUserData => ({
+            ...prevUserData,
+            [propertyName]: value
+        }));
+    }
+
+    const toastOnDidDismiss = () => {
+        setToast(false)
+
+        setUserData({
+            _id: null,
+            _rev: null,
+            IdCodigo: null,
+            Nombre: null,
+            Apellido: null,
+            Usuario: null,
+            Contrasena: null,
+            CContrasena: null,
+            CorrelativosAsignados: null,
+            CorrelativosDisponibles: 0,
+            Rol: null,
+            Activo: null,
+            Collection: 'Usuarios'
+        });
+        
+        // history.goBack();
+        history.push("/page/usuarios");
+    }
+
+    const handleUpdateUser = () => {
 
     }
 
     return (
         <IonPage>
+            <IonToast isOpen={toast} onDidDismiss={toastOnDidDismiss} message="¡Hecho!" duration={2000} color={'success'} />
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -73,83 +171,80 @@ const DetalleUsuario: React.FC<UserDetailPageProps> = ({ match, history }) => {
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Nombre</IonLabel>
-                            <IonInput onIonChange={e => setNombre(e.detail.value!)} value={nombre} />
+                            <IonInput label="Nombre" labelPlacement="stacked"
+                                onIonChange={e => handleInputChange('Nombre', e.detail.value!)} value={userData.Nombre} />
                         </IonItem>
                     </IonCol>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Apellido</IonLabel>
-                            <IonInput onIonChange={e => setApellido(e.detail.value!)} value={apellido} />
-                        </IonItem>
-                    </IonCol>
-                </IonRow>
-                <IonRow>
-                    <IonCol>
-                        <IonItem>
-                            <IonLabel position="stacked">Usuario</IonLabel>
-                            <IonInput onIonChange={e => setUsuario(e.detail.value!)} value={usuario} />
+                            <IonInput label="Apellido" labelPlacement="stacked"
+                                onIonChange={e => handleInputChange('Apellido', e.detail.value!)} value={userData.Apellido} />
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Contraseña</IonLabel>
-                            <IonInput type='password' onIonChange={e => setContrasena(e.detail.value!)} value={contrasena} />
+                            <IonInput label="Usuario" labelPlacement="stacked"
+                                onIonChange={e => handleInputChange('Usuario', e.detail.value!)} value={userData.Usuario} />
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Confirmar Contraseña</IonLabel>
-                            <IonInput type='password' onIonChange={e => setcContrasena(e.detail.value!)} value={cContrasena} />
+                            <IonInput label="Contraseña" labelPlacement="stacked" type='password'
+                                onIonChange={e => handleInputChange('Contrasena', e.detail.value!)} value={userData.Contrasena} />
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Correlativos Asignados</IonLabel>
-                            <IonInput onIonChange={e => setCorrelativosAsignados(parseInt(e.detail.value!))} value={correlativosAsignados} />
-                        </IonItem>
-                    </IonCol>
-                    <IonCol>
-                        <IonItem>
-                            <IonLabel position="stacked">Correlativos Disponibles</IonLabel>
-                            <IonInput onIonChange={e => setCorrelativosDisponibles(parseInt(e.detail.value!))} disabled={true} value={correlativosDisponibles} />
+                            <IonInput label="Confirmar Contraseña" labelPlacement="stacked" type='password'
+                                onIonChange={e => handleInputChange('CContrasena', e.detail.value!)} value={userData.CContrasena} />
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel>Rol</IonLabel>
-                            <IonSelect interface='popover' value={rol} onIonChange={e => setRol(e.detail.value)}>
-                                <IonSelectOption>ADMINISTRADOR</IonSelectOption>
-                                <IonSelectOption>LIMITADO</IonSelectOption>
+                            <IonInput label="Correlativos Asignados" labelPlacement="stacked"
+                                onIonChange={e => handleInputChange('CorrelativosAsignados', e.detail.value!)} value={userData.CorrelativosAsignados} />
+                        </IonItem>
+                    </IonCol>
+                    <IonCol>
+                        <IonItem>
+                            <IonInput label="Correlativos Disponibles" labelPlacement="stacked"
+                                onIonChange={e => handleInputChange('CorrelativosDisponibles', e.detail.value!)} disabled={true} value={userData.CorrelativosDisponibles} />
+                        </IonItem>
+                    </IonCol>
+                </IonRow>
+                <IonRow>
+                    <IonCol>
+                        <IonItem>
+                            <IonSelect label="Rol" interface='popover' value={userData.Rol} onIonChange={e => handleInputChange('Rol', e.detail.value!)}>
+                                <IonSelectOption>Administrador</IonSelectOption>
+                                <IonSelectOption>Limitado</IonSelectOption>
                             </IonSelect>
                         </IonItem>
                     </IonCol>
                     <IonCol>
                         <IonItem>
-                            <IonLabel position="stacked">Acopio</IonLabel>
-                            <IonInput onIonChange={e => setAcopio(e.detail.value!)} value={acopio} />
+                            <IonInput label="Acopio" labelPlacement="stacked" onIonChange={e => handleInputChange('IdCodigo', e.detail.value!)} value={userData.IdCodigo} />
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
                         <IonItem>
-                            <IonLabel>Activo</IonLabel>
-                            <IonToggle slot='end' color='success' checked={activo} onIonChange={e => setActivo(e.detail.checked)}></IonToggle>
+                            <IonToggle slot='start' color='success' checked={userData.Activo || false} onIonChange={e => handleInputChange('Activo', e.detail.checked!)}>Activo</IonToggle>
                         </IonItem>
                     </IonCol>
                 </IonRow>
                 <IonRow>
                     <IonCol>
-                        <IonButton expand='block' onClick={handleSaveNewUser}>Salvar</IonButton>
+                        <IonButton expand='block' onClick={handleSaveUser}>Salvar</IonButton>
                     </IonCol>
                 </IonRow>
                 {/* <IonToast
