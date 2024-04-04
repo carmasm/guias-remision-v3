@@ -2,6 +2,7 @@ import { IonButton, IonContent, IonIcon } from '@ionic/react';
 import './GuiaRemisionPrintPreview.css';
 import { arrowBackOutline, downloadOutline, printOutline } from 'ionicons/icons';
 import { useEffect } from 'react';
+import { format } from 'date-fns';
 
 const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonClick: () => void }> = ({ guiaRemisionData, onBackButtonClick }) => {
     
@@ -52,13 +53,14 @@ const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonCl
                             <h3>AGRO INVERSIONES DEL CARIBE S. DE R.L.</h3>
                             <h6>Col. Trejo, 11 Calle, 27 Y 29 Ave., Frente al Parque Chahin, San Pedro Sula, Cortés</h6>
                             <h6>Teléfono: 2510-3280 RTN: 05019019181991 Correo: agroinca@gmail.com</h6>
-                            <h6>CAI: B3F076-2BA5FF-1A4DAB-A4DFA3-B4B655-32</h6>
+                            <h6>CAI: {guiaRemisionData.CAI}</h6>
                         </div>
 
                         <div className="td">
                             <h6>GUÍA DE REMISIÓN</h6>
                             <h6>000-001-08-00</h6><br />
-                            <h4>No 000000</h4>
+                            <h4>No {guiaRemisionData.NumeracionCorrelativa}</h4>
+                            <img src="qr-code.png" width="100" height="100" />
                         </div>
                     </div>
 
@@ -147,9 +149,9 @@ const GuiaRemisionPrintPreview: React.FC<{ guiaRemisionData: any, onBackButtonCl
                     <br />
                     <br />
                     <div className="footer">
-                        <div className="td left">Rango Autorizado: 000-001-08-00003101 - 000-001-08-00003500</div>
+                        <div className="td left">Rango Autorizado: {guiaRemisionData.RangoAutorizadoInicial} - {guiaRemisionData.RangoAutorizadoFinal}</div>
                         <div className="td">________________________</div>
-                        <div className="td left">Fecha de Recepción: 06/01/2024 - Fecha Límite de Emisión: 01/06/2025</div>
+                        <div className="td left">Fecha de Recepción: 06/01/2024 - Fecha Límite de Emisión: {format(guiaRemisionData.FechaLimiteEmision, 'dd/MM/yyyy')}</div>
                         <div className="td">Firma</div>
                     </div>
                 </div>

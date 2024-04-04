@@ -65,7 +65,7 @@ const Login: React.FC = () => {
     }
 
     if (!loginData.password) {
-      dismiss();
+      // dismiss();
       setMessage("Ingrese una contraseña");
       setIserror(true);
       return;

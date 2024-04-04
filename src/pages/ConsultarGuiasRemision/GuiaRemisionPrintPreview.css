@@ -178,6 +178,11 @@
         display: block;
         text-align: center;
     }
+
+    .invoice-box .table .trh.top .td img{
+        display: block; /* Ensure the image is displayed as a block element */
+        margin: 0 auto; /* Center the image horizontally */
+    }
     
     .invoice-box .table .dt {
         width: 100%;

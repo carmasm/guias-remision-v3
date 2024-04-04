@@ -1,7 +1,8 @@
-import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar, useIonLoading } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { pouchdbService } from '../../pouchdbService';
 import { useHistory, useLocation } from 'react-router';
+import './NuevaGuiaRemision.css';
 
 const NuevaGuiaRemision: React.FC = () => {
 
@@ -25,8 +26,13 @@ const NuevaGuiaRemision: React.FC = () => {
   const [cantidad, setCantidad] = useState<any>(null);
 
   const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastColor, setToastColor] = useState("success");
   const location = useLocation();
   const history = useHistory();
+
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  const [present, dismiss] = useIonLoading();
 
   // const [defaultValue, setDefaultValue] = useState('1623d582b77ef85496e3259a7b05532e'); //FRUTA FRESCA DE PALMA AFRICANA
 
@@ -98,63 +104,80 @@ const NuevaGuiaRemision: React.FC = () => {
         console.error('Error fetching data:', error);
       });
 
-    // debugger
-    // console.log(remitentes);
-
-    const doctoFiscal = pouchdbService.findAllDocumentsBy([['Collection', 'DocumentosFiscales'], ['Activo', false]])
-    .then(data => {
-      console.log({data})
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-
   }, [location.key]);
 
 
-  const handleSaveItem = () => {
+  const handleSaveItem = async () => {
 
-    const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
-    const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
+    try {
 
-    const doctoFiscal = pouchdbService.findAllDocumentsBy([['Collection', 'DocumentosFiscales'], ['Activo', true]]);
+      validateFields();
 
-    console.table(doctoFiscal);
+      // Check if any required field is empty
+      if (invalidFields.length > 0) {
 
-    const newDocument = {
-            IdCodigo:              '',
-            NombreCortoCodigo:     '',
-            IdRemitente:           selectedRemitente._id,
-            NombreRemitente:       selectedRemitente.Nombre,
-            IdDestinatario:        selectedDestinatario._id,
-            NombreDestinatario:    selectedDestinatario.Nombre,
-            IdPuntoDePartida:      selectedPuntoDePartida._id,
-            NombrePuntoDePartida:  selectedPuntoDePartida.Nombre,
-            IdPuntoDeDestino:      selectedPuntoDeDestino._id,
-            NombrePuntoDeDestino:  selectedPuntoDeDestino.Nombre,
-            IdMotivo:              selectedMotivo._id,
-            DescripcionMotivo:     selectedMotivo.Valor,
-            IdProducto:            selectedProducto._id,
-            DescripcionProducto:   selectedProducto.Descripcion,
-            IdTransportista:       selectedTransportista._id,
-            NombreTransportista:   selectedTransportista.Nombre,
-            IdConductor:           selectedConductor._id,
-            NombreConductor:       selectedConductor.NombreCompleto,
-            IdDocumentoFiscal:     '',
-            IdUsuario:             '',
-            NombreUsuario:         '',
-            FechaTransaccion:      fechaTransaccion,
-            FechaLimiteEmision:    '',
-            CAI:                   '',
-            NumeracionCorrelativa: 0,
-            RandoAutorizado:       '',
-            Estado:                'EMITIDA',
-            Cantidad:              Number(cantidad),
-            Collection:            'GuiasRemision'
-    }
+        setToastMessage("Please fill out all required fields.");
+        setToastColor("warning");
+        setToast(true);
 
-    pouchdbService.addDocument(newDocument)
-      .then(() => {
+        return;
+      }
+
+      // present('Salvando...');
+      debugger
+
+      const gmt6Date = new Date().toLocaleString('en-US', { timeZone: 'America/Guatemala' });
+      const fechaTransaccion = new Date(gmt6Date).toISOString(); //REALMENTE ES NECESARIO CONVERTIR LA FECHA A FORMATO ISO????
+
+      const [
+        doctoFiscalData
+      ] = await Promise.all([
+        pouchdbService.findAllDocumentsBy([['Collection', 'DocumentosFiscales'], ['Activo', true]])
+      ]);
+
+      const doctoFiscal: any = doctoFiscalData[0];
+
+      if (doctoFiscal) {
+
+        const numeracionCorrelativa = Number(doctoFiscal.NumeracionCorrelativaActual) + 1;
+
+        const newDocument = {
+              IdCodigo: '',
+              NombreCortoCodigo: '',
+              IdRemitente: selectedRemitente?._id,
+              NombreRemitente: selectedRemitente.Nombre,
+              IdDestinatario: selectedDestinatario._id,
+              NombreDestinatario: selectedDestinatario.Nombre,
+              IdPuntoDePartida: selectedPuntoDePartida._id,
+              NombrePuntoDePartida: selectedPuntoDePartida.Nombre,
+              IdPuntoDeDestino: selectedPuntoDeDestino._id,
+              NombrePuntoDeDestino: selectedPuntoDeDestino.Nombre,
+              IdMotivo: selectedMotivo._id,
+              DescripcionMotivo: selectedMotivo.Valor,
+              IdProducto: selectedProducto._id,
+              DescripcionProducto: selectedProducto.Descripcion,
+              IdTransportista: selectedTransportista._id,
+              NombreTransportista: selectedTransportista.Nombre,
+              IdConductor: selectedConductor._id,
+              NombreConductor: selectedConductor.NombreCompleto,
+              IdDocumentoFiscal: doctoFiscal._id,
+              IdUsuario: '',
+              NombreUsuario: '',
+              FechaTransaccion: fechaTransaccion,
+              FechaLimiteEmision: doctoFiscal.FechaLimiteEmision,
+              CAI: doctoFiscal.CAI,
+              NumeracionCorrelativa: numeracionCorrelativa,
+              RangoAutorizadoInicial: `${doctoFiscal.PuntoDeEmisionInicial}-${doctoFiscal.EstablecimientoInicial}-${doctoFiscal.TipoDeDocumentoInicial}-${doctoFiscal.NumeracionCorrelativaInicial}`,
+              RangoAutorizadoFinal: `${doctoFiscal.PuntoDeEmisionFinal}-${doctoFiscal.EstablecimientoFinal}-${doctoFiscal.TipoDeDocumentoFinal}-${doctoFiscal.NumeracionCorrelativaFinal}`,
+              Estado: 'EMITIDA',
+              Cantidad: Number(cantidad),
+              DeviceInfo: navigator.userAgent,
+              Collection: 'GuiasRemision'
+        }
+
+        await pouchdbService.addDocument(newDocument);
+        await pouchdbService.updateDocument({ ...doctoFiscal, NumeracionCorrelativaActual: numeracionCorrelativa });
+
         setSelectedRemitente(null);
         setSelectedDestinatario(null);
         setSelectedPuntoDePartida(null);
@@ -165,15 +188,42 @@ const NuevaGuiaRemision: React.FC = () => {
         setSelectedProducto(null);
         setCantidad(null);
 
+        // dismiss();
+
+        setToastMessage("¡Documento guardado!"); // Set the success toast message
         setToast(true);
 
         history.push("/page/consultar-guias-remision");
-      });
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
+
+  const validateFields = () => {
+    const invalidFieldsArray: string[] = [];
+
+    if (!selectedRemitente) invalidFieldsArray.push("selectedRemitente");
+    if (!selectedDestinatario) invalidFieldsArray.push("selectedDestinatario");
+    if (!selectedPuntoDePartida) invalidFieldsArray.push("selectedPuntoDePartida");
+    if (!selectedPuntoDeDestino) invalidFieldsArray.push("selectedPuntoDeDestino");
+    if (!selectedMotivo) invalidFieldsArray.push("selectedMotivo");
+    if (!selectedProducto) invalidFieldsArray.push("selectedProducto");
+    if (!selectedTransportista) invalidFieldsArray.push("selectedTransportista");
+    if (!selectedConductor) invalidFieldsArray.push("selectedConductor");
+    if (!cantidad) invalidFieldsArray.push("cantidad");
+
+    setInvalidFields(invalidFieldsArray);
   };
 
   return (
     <IonPage>
-      <IonToast isOpen={toast} onDidDismiss={() => setToast(false)} message="¡Documento guardado!" duration={2000} color={'success'} />
+      <IonToast className="custom-toast" isOpen={toast} onDidDismiss={() => setToast(false)} message={toastMessage} duration={2000} color={toastColor} />
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -186,14 +236,19 @@ const NuevaGuiaRemision: React.FC = () => {
       <IonContent fullscreen>
         <br />
         <IonItem>
-          <IonSelect label="Remitente" labelPlacement="floating" fill="outline" value={selectedRemitente} onIonChange={e => setSelectedRemitente(e.detail.value)}>
+          <IonSelect label="Remitente" labelPlacement="floating" fill="outline"
+            interface="action-sheet"
+            // style={{ "--border-color": invalidFields.includes("selectedRemitente") ? "red" : "" }}
+            // color="danger"
+            value={selectedRemitente} onIonChange={e => setSelectedRemitente(e.detail.value)}>
             {remitentes.map((rmt) => (
               <IonSelectOption key={rmt._id} value={rmt}>
                 {rmt.Nombre}
               </IonSelectOption>
             ))}
           </IonSelect>
-          <IonSelect label="Destinatario" labelPlacement="floating" fill="outline" value={selectedDestinatario} onIonChange={e => setSelectedDestinatario(e.detail.value)}>
+          <IonSelect label="Destinatario" labelPlacement="floating" fill="outline" interface="popover"
+            value={selectedDestinatario} onIonChange={e => setSelectedDestinatario(e.detail.value)}>
             {destinatarios.map((dst) => (
               <IonSelectOption key={dst._id} value={dst}>
                 {dst.Nombre}
@@ -237,7 +292,7 @@ const NuevaGuiaRemision: React.FC = () => {
               </IonSelectOption>
             ))}
           </IonSelect>
-          <IonInput label="Cantidad" labelPlacement="stacked" fill="solid" value={cantidad} onIonInput={(e) => setCantidad(e.detail.value!)}></IonInput>
+          <IonInput label="Cantidad" labelPlacement="stacked" fill="solid" type="number" value={cantidad} onIonInput={(e) => setCantidad(e.detail.value!)}></IonInput>
         </IonItem>
         <br />
         <IonItem>
@@ -272,7 +327,7 @@ const NuevaGuiaRemision: React.FC = () => {
               handler: handleSaveItem,
             },
           ]}
-          // onDidDismiss={({ detail }) => console.log(`Dismissed with role: ${detail.role}`)}
+        // onDidDismiss={({ detail }) => console.log(`Dismissed with role: ${detail.role}`)}
         ></IonAlert>
       </IonContent>
     </IonPage>

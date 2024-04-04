@@ -30,6 +30,9 @@ const ConsultarGuiasRemision: React.FC = () => {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
+
+      debugger
+      console.log(navigator.userAgent);
     // console.count()
     // debugger
   }, [location.key]);
