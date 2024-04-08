@@ -1,25 +1,28 @@
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../../components/ExploreContainer';
-import { add } from 'ionicons/icons';
+import { add, documentText } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { RouteComponentProps, useLocation } from 'react-router';
 import { pouchdbService } from '../../pouchdbService';
+import { format } from 'date-fns';
 
-const DocumentosFiscales: React.FC<RouteComponentProps> = ({history}) => {
+const DocumentosFiscales: React.FC<RouteComponentProps> = ({ history }) => {
 
   const [doctosFiscales, setDoctosFiscales] = useState<any>([]);
   const location = useLocation();
 
   useEffect(() => {
 
-    pouchdbService.findAllDocumentsByCollectionSorted('DocumentosFiscales', 'CAI', 'asc')
-      .then(data => {
-        setDoctosFiscales(data)
-        console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    if (location.pathname === '/page/cai') {
+      pouchdbService.findAllDocumentsByCollectionSorted('DocumentosFiscales', 'CAI', 'asc')
+        .then(data => {
+          setDoctosFiscales(data)
+          console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
 
   }, [location.key]);
 
@@ -35,16 +38,17 @@ const DocumentosFiscales: React.FC<RouteComponentProps> = ({history}) => {
       </IonHeader>
 
       <IonContent fullscreen>
-      <IonList>
+        <IonList>
           {
             doctosFiscales?.map((documento: any) => {
               return (
                 <IonItem key={documento._id}>
+                  <IonAvatar slot="start"><img src="paperwork.png" /></IonAvatar>
                   <IonLabel>{documento.CAI}</IonLabel>
                   <IonLabel>
-                    <h4>{documento.FechaLimiteEmision}</h4>
-                    <h3>Cantidad Otorgada: {documento.CantidadOtorgada}</h3>
-                    <h3>Corr. Actual: {documento.NumeracionCorrelativaActual}</h3>
+                    <h4>{format(documento.FechaLimiteEmision, 'dd/MM/yyyy')}</h4>
+                    <p>Cantidad Otorgada: {documento.CantidadOtorgada}</p>
+                    <p>Corr. Actual: {documento.NumeracionCorrelativaActual}</p>
                   </IonLabel>
                   <IonLabel>{documento.Activo}</IonLabel>
                   <IonButton onClick={e => {
@@ -76,7 +80,7 @@ const DocumentosFiscales: React.FC<RouteComponentProps> = ({history}) => {
         </IonList>
 
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton routerLink="/page/cai/0">
+          <IonFabButton>
             {/* <IonRouterLink routerDirection="forward" routerLink={`/item/${item.id}`}> */}
             <IonIcon icon={add} />
           </IonFabButton>

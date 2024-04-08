@@ -1,25 +1,27 @@
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../../components/ExploreContainer';
 import { useEffect, useState } from 'react';
 import { RouteComponentProps, useLocation } from 'react-router';
 import { pouchdbService } from '../../pouchdbService';
 import { add } from 'ionicons/icons';
 
-const Codigos: React.FC<RouteComponentProps> = ({history}) => {
+const Codigos: React.FC<RouteComponentProps> = ({ history }) => {
 
   const [codigos, setCodigos] = useState<any>([]);
   const location = useLocation();
 
   useEffect(() => {
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Codigos', 'NombreCorto', 'asc')
-      .then(data => {
-        setCodigos(data)
-        console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    if (location.pathname === '/page/codigos') {
+      pouchdbService.findAllDocumentsByCollectionSorted('Codigos', 'NombreCorto', 'asc')
+        .then(data => {
+          setCodigos(data)
+          console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
 
   }, [location.key]);
 
@@ -40,6 +42,7 @@ const Codigos: React.FC<RouteComponentProps> = ({history}) => {
             codigos?.map((codigo: any) => {
               return (
                 <IonItem key={codigo._id}>
+                  <IonAvatar slot="start"><img src="user-96.png" /></IonAvatar>
                   <IonLabel>{codigo.RTN}</IonLabel>
                   <IonLabel>
                     <h4>{codigo.NombreCorto}</h4>
@@ -74,9 +77,9 @@ const Codigos: React.FC<RouteComponentProps> = ({history}) => {
             })
           }
         </IonList>
-        
+
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton routerLink="/page/codigos/0">
+          <IonFabButton>
             {/* <IonRouterLink routerDirection="forward" routerLink={`/item/${item.id}`}> */}
             <IonIcon icon={add} />
           </IonFabButton>

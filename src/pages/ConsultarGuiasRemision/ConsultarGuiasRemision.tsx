@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonRow, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonMenuButton, IonPage, IonRow, IonSearchbar, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { useParams } from 'react-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ExploreContainer from '../../components/ExploreContainer';
@@ -14,25 +14,35 @@ const ConsultarGuiasRemision: React.FC = () => {
   const [newItem, setNewItem] = useState('');
   const [editItem, setEditItem] = useState<any[]>([]);
   const location = useLocation<any>();
+  const [showAlert, setShowAlert] = useState(false);
+
 
   // const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem2, setSelectedItem2] = useState<any>([]);
+
+  const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastColor, setToastColor] = useState("success");
 
   const { name } = useParams<{ name: string; }>();
 
   useEffect(() => {
-    // Load documents from CouchDB
-    pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc')
-      .then(data => {
-        setDocuments(data)
-        console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+
+    if (location.pathname === '/page/consultar-guias-remision') {
+      // Load documents from CouchDB
+      pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc')
+        .then(data => {
+          setDocuments(data)
+          console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
 
       debugger
       console.log(navigator.userAgent);
+    }
     // console.count()
     // debugger
   }, [location.key]);
@@ -83,11 +93,30 @@ const ConsultarGuiasRemision: React.FC = () => {
     pouchdbService.deleteDocument(id, rev)
       .then(() => {
         // After deleting, fetch the updated list
+
+        setToastMessage("¡Hecho!");
+        setToast(true);
+
         return pouchdbService.findAllDocumentsByCollectionSorted('GuiasRemision', 'FechaTransaccion', 'desc');
+
       })
       .then((data) => {
         setDocuments(data);
       });
+  };
+
+  const handleAlertAction = (confirmed: boolean) => {
+    if (confirmed) {
+      handleDeleteItem(selectedItem2._id, selectedItem2._rev);
+    }
+
+    setShowAlert(false);
+    setSelectedItem2(null);
+  };
+
+  const handleDeleteButtonClick = (doc: any) => {
+    setSelectedItem2(doc);
+    setShowAlert(true);
   };
 
   const handleBackButtonClick = () => {
@@ -117,6 +146,7 @@ const ConsultarGuiasRemision: React.FC = () => {
 
   return (
     <IonPage>
+      <IonToast className="custom-toast" isOpen={toast} onDidDismiss={() => setToast(false)} message={toastMessage} duration={2000} color={toastColor} />
       <IonHeader className="hide-content-print">
         <IonToolbar>
           <IonButtons slot="start">
@@ -130,66 +160,6 @@ const ConsultarGuiasRemision: React.FC = () => {
       </IonHeader>
 
       <IonContent className="hide-content-print">
-        {/* <IonItem>
-          <IonInput
-            placeholder="New Item"
-            value={newItem}
-            onIonInput={(e) => setNewItem(e.detail.value!)}
-          />
-          <IonButton onClick={handleAddItem}>Add Item</IonButton>
-        </IonItem> */}
-
-        {/* <IonList>
-          {items.map((item) => (
-            <IonItem key={item._id}>
-              <IonInput
-                value={item.DNI}
-                onIonChange={(e) => {
-                  // Create a copy of the item with the updated DNI
-                  setEditItem({ ...item, DNI: e.detail.value! });
-                }}
-              />
-              <IonInput
-                value={item.Descripcion}
-                onIonChange={(e) => {
-                  // Create a copy of the item with the updated Descripcion
-                  setEditItem({ ...item, Descripcion: e.detail.value! });
-                }}
-              />
-              <IonInput
-                value={item.Nombre}
-                onIonChange={(e) => {
-                  // Create a copy of the item with the updated Nombre
-                  setEditItem({ ...item, Nombre: e.detail.value! });
-                }}
-              />
-              <IonButton onClick={handleUpdateItem}>
-                <IonIcon icon={pencil} />
-              </IonButton>
-              <IonButton onClick={() => handleDeleteItem(item._id, item._rev)}>
-                <IonIcon icon={trash} />
-              </IonButton>
-              <IonButton onClick={() => window.print()}>
-                <IonIcon icon={print} />
-              </IonButton>
-            </IonItem>
-          ))}
-        </IonList>
-        <IonGrid fixed>
-          <IonRow>
-            <IonCol>
-              <IonCard color="secondary">
-                <IonCardHeader>
-                  <IonCardSubtitle />
-                  <IonCardTitle />
-                </IonCardHeader>
-                <IonCardContent>
-
-                </IonCardContent>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid> */}
         <IonGrid>
           <IonRow>
             {documents.map((doc) => (
@@ -206,7 +176,7 @@ const ConsultarGuiasRemision: React.FC = () => {
                     {doc.NombrePuntoDeDestino}
                   </IonCardContent>
                   <div style={{ marginTop: 'auto' }}>
-                    <IonButton onClick={() => handleDeleteItem(doc._id, doc._rev)}>
+                    <IonButton onClick={() => handleDeleteButtonClick(doc)}>
                       <IonIcon icon={trash} />
                     </IonButton>
                     <IonButton onClick={() => setSelectedItem(doc)}>
@@ -218,6 +188,24 @@ const ConsultarGuiasRemision: React.FC = () => {
             ))}
           </IonRow>
         </IonGrid>
+        <IonAlert
+          isOpen={showAlert}
+          message="¿Está seguro que desea eliminar el documento?"
+          // trigger="present-alert"
+          buttons={[
+            {
+              text: 'No',
+              role: 'cancel',
+              handler: () => handleAlertAction(false)
+            },
+            {
+              text: 'Si',
+              role: 'confirm',
+              handler: () => handleAlertAction(true)
+            },
+          ]}
+        // onDidDismiss={({ detail }) => console.log(`Dismissed with role: ${detail.role}`)}
+        ></IonAlert>
       </IonContent>
 
       <div className={`print-preview ${selectedItem ? 'visible' : ''}`}>

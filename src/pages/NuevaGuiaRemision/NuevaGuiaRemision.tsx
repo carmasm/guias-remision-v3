@@ -1,4 +1,4 @@
-import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar, useIonLoading } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonHeader, IonInput, IonItem, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToast, IonToolbar, useIonLoading } from '@ionic/react';
 import { useEffect, useState } from 'react';
 import { pouchdbService } from '../../pouchdbService';
 import { useHistory, useLocation } from 'react-router';
@@ -33,78 +33,100 @@ const NuevaGuiaRemision: React.FC = () => {
 
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
   const [present, dismiss] = useIonLoading();
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 600); // Assuming desktop width starts from 768px
 
   // const [defaultValue, setDefaultValue] = useState('1623d582b77ef85496e3259a7b05532e'); //FRUTA FRESCA DE PALMA AFRICANA
 
   useEffect(() => {
-    console.log('NuevaGuiaRemision')
-    pouchdbService.findAllDocumentsByCollectionSorted('Remitentes', 'Nombre', 'asc')
-      .then(data => {
-        setRemitentes(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Destinatarios', 'Nombre', 'asc')
-      .then(data => {
-        setDestinatarios(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+    if (location.pathname === '/page/nueva-guia-remision') {
 
-    pouchdbService.findAllDocumentsByCollectionSorted('CentrosdeRecoleccion', 'Nombre', 'asc')
-      .then(data => {
+      console.log('NuevaGuiaRemision Master Collections Loaded')
+      pouchdbService.findAllDocumentsByCollectionSorted('Remitentes', 'Nombre', 'asc')
+        .then(data => {
+          setRemitentes(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
 
-        setPuntosdePartida(data)
-        setPuntosdeDestino(data)
+      pouchdbService.findAllDocumentsByCollectionSorted('Destinatarios', 'Nombre', 'asc')
+        .then(data => {
+          setDestinatarios(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
 
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+      pouchdbService.findAllDocumentsByCollectionSorted('CentrosdeRecoleccion', 'Nombre', 'asc')
+        .then(data => {
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Configuraciones', 'Valor', 'asc')
-      .then(data => {
-        setmotivosDeTraspaso(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+          setPuntosdePartida(data)
+          setPuntosdeDestino(data)
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Productos', 'Descripcion', 'asc')
-      .then(data => {
-        setProductos(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Transportistas', 'Nombre', 'asc')
-      .then(data => {
-        setTransportistas(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+      pouchdbService.findAllDocumentsByCollectionSorted('Configuraciones', 'Valor', 'asc')
+        .then(data => {
+          setmotivosDeTraspaso(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
 
-    pouchdbService.findAllDocumentsByCollectionSorted('Conductores', 'NombreCompleto', 'asc')
-      .then(data => {
-        setConductores(data)
-        // console.log(data)
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+      pouchdbService.findAllDocumentsByCollectionSorted('Productos', 'Descripcion', 'asc')
+        .then(data => {
+          setProductos(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+
+      pouchdbService.findAllDocumentsByCollectionSorted('Transportistas', 'Nombre', 'asc')
+        .then(data => {
+          setTransportistas(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+
+      pouchdbService.findAllDocumentsByCollectionSorted('Conductores', 'NombreCompleto', 'asc')
+        .then(data => {
+          setConductores(data)
+          // console.log(data)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
 
   }, [location.key]);
+
+
+  useEffect(() => {
+
+    console.count('useEffect EventListener Count');
+
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 600); // Update isDesktop state based on window width
+    };
+
+    window.addEventListener('resize', handleResize); // Add resize event listener
+
+    return () => {
+      window.removeEventListener('resize', handleResize); // Cleanup resize event listener
+    };
+    
+  }, []);
 
 
   const handleSaveItem = async () => {
@@ -142,37 +164,37 @@ const NuevaGuiaRemision: React.FC = () => {
         const numeracionCorrelativa = Number(doctoFiscal.NumeracionCorrelativaActual) + 1;
 
         const newDocument = {
-              IdCodigo: '',
-              NombreCortoCodigo: '',
-              IdRemitente: selectedRemitente?._id,
-              NombreRemitente: selectedRemitente.Nombre,
-              IdDestinatario: selectedDestinatario._id,
-              NombreDestinatario: selectedDestinatario.Nombre,
-              IdPuntoDePartida: selectedPuntoDePartida._id,
-              NombrePuntoDePartida: selectedPuntoDePartida.Nombre,
-              IdPuntoDeDestino: selectedPuntoDeDestino._id,
-              NombrePuntoDeDestino: selectedPuntoDeDestino.Nombre,
-              IdMotivo: selectedMotivo._id,
-              DescripcionMotivo: selectedMotivo.Valor,
-              IdProducto: selectedProducto._id,
-              DescripcionProducto: selectedProducto.Descripcion,
-              IdTransportista: selectedTransportista._id,
-              NombreTransportista: selectedTransportista.Nombre,
-              IdConductor: selectedConductor._id,
-              NombreConductor: selectedConductor.NombreCompleto,
-              IdDocumentoFiscal: doctoFiscal._id,
-              IdUsuario: '',
-              NombreUsuario: '',
-              FechaTransaccion: fechaTransaccion,
-              FechaLimiteEmision: doctoFiscal.FechaLimiteEmision,
-              CAI: doctoFiscal.CAI,
-              NumeracionCorrelativa: numeracionCorrelativa,
-              RangoAutorizadoInicial: `${doctoFiscal.PuntoDeEmisionInicial}-${doctoFiscal.EstablecimientoInicial}-${doctoFiscal.TipoDeDocumentoInicial}-${doctoFiscal.NumeracionCorrelativaInicial}`,
-              RangoAutorizadoFinal: `${doctoFiscal.PuntoDeEmisionFinal}-${doctoFiscal.EstablecimientoFinal}-${doctoFiscal.TipoDeDocumentoFinal}-${doctoFiscal.NumeracionCorrelativaFinal}`,
-              Estado: 'EMITIDA',
-              Cantidad: Number(cantidad),
-              DeviceInfo: navigator.userAgent,
-              Collection: 'GuiasRemision'
+          IdCodigo: '',
+          NombreCortoCodigo: '',
+          IdRemitente: selectedRemitente?._id,
+          NombreRemitente: selectedRemitente.Nombre,
+          IdDestinatario: selectedDestinatario._id,
+          NombreDestinatario: selectedDestinatario.Nombre,
+          IdPuntoDePartida: selectedPuntoDePartida._id,
+          NombrePuntoDePartida: selectedPuntoDePartida.Nombre,
+          IdPuntoDeDestino: selectedPuntoDeDestino._id,
+          NombrePuntoDeDestino: selectedPuntoDeDestino.Nombre,
+          IdMotivo: selectedMotivo._id,
+          DescripcionMotivo: selectedMotivo.Valor,
+          IdProducto: selectedProducto._id,
+          DescripcionProducto: selectedProducto.Descripcion,
+          IdTransportista: selectedTransportista._id,
+          NombreTransportista: selectedTransportista.Nombre,
+          IdConductor: selectedConductor._id,
+          NombreConductor: selectedConductor.NombreCompleto,
+          IdDocumentoFiscal: doctoFiscal._id,
+          IdUsuario: '',
+          NombreUsuario: '',
+          FechaTransaccion: fechaTransaccion,
+          FechaLimiteEmision: doctoFiscal.FechaLimiteEmision,
+          CAI: doctoFiscal.CAI,
+          NumeracionCorrelativa: numeracionCorrelativa,
+          RangoAutorizadoInicial: `${doctoFiscal.PuntoDeEmisionInicial}-${doctoFiscal.EstablecimientoInicial}-${doctoFiscal.TipoDeDocumentoInicial}-${doctoFiscal.NumeracionCorrelativaInicial}`,
+          RangoAutorizadoFinal: `${doctoFiscal.PuntoDeEmisionFinal}-${doctoFiscal.EstablecimientoFinal}-${doctoFiscal.TipoDeDocumentoFinal}-${doctoFiscal.NumeracionCorrelativaFinal}`,
+          Estado: 'EMITIDA',
+          Cantidad: Number(cantidad),
+          DeviceInfo: navigator.userAgent,
+          Collection: 'GuiasRemision'
         }
 
         await pouchdbService.addDocument(newDocument);
@@ -234,83 +256,123 @@ const NuevaGuiaRemision: React.FC = () => {
       </IonHeader>
 
       <IonContent fullscreen>
-        <br />
-        <IonItem>
-          <IonSelect label="Remitente" labelPlacement="floating" fill="outline"
-            interface="action-sheet"
-            // style={{ "--border-color": invalidFields.includes("selectedRemitente") ? "red" : "" }}
-            // color="danger"
-            value={selectedRemitente} onIonChange={e => setSelectedRemitente(e.detail.value)}>
-            {remitentes.map((rmt) => (
-              <IonSelectOption key={rmt._id} value={rmt}>
-                {rmt.Nombre}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-          <IonSelect label="Destinatario" labelPlacement="floating" fill="outline" interface="popover"
-            value={selectedDestinatario} onIonChange={e => setSelectedDestinatario(e.detail.value)}>
-            {destinatarios.map((dst) => (
-              <IonSelectOption key={dst._id} value={dst}>
-                {dst.Nombre}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-        </IonItem>
-        <br />
-        <IonItem>
-          <IonSelect label="Punto de Partida" labelPlacement="floating" fill="outline" value={selectedPuntoDePartida} onIonChange={e => setSelectedPuntoDePartida(e.detail.value)}>
-            {puntosdePartida.map((ctr) => (
-              <IonSelectOption key={ctr._id} value={ctr}>
-                {ctr.Nombre}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-          <IonSelect label="Punto de Destino" labelPlacement="floating" fill="outline" value={selectedPuntoDeDestino} onIonChange={e => setSelectedPuntoDeDestino(e.detail.value)}>
-            {puntosdeDestino.map((ctr) => (
-              <IonSelectOption key={ctr._id} value={ctr}>
-                {ctr.Nombre}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-        </IonItem>
-        <br />
-        <IonItem>
-          <IonSelect label="Motivos de Traslado" labelPlacement="floating" fill="outline" value={selectedMotivo} onIonChange={e => setSelectedMotivo(e.detail.value)}>
-            {motivosDeTraspaso.map((mtv) => (
-              <IonSelectOption key={mtv._id} value={mtv}>
-                {mtv.Valor}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-        </IonItem>
-        <br />
-        <IonItem>
-          <IonSelect label="Producto" labelPlacement="floating" fill="outline" value={selectedProducto} onIonChange={e => setSelectedProducto(e.detail.value)}>
-            {productos.map((prd) => (
-              <IonSelectOption key={prd._id} value={prd}>
-                {prd.Descripcion}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-          <IonInput label="Cantidad" labelPlacement="stacked" fill="solid" type="number" value={cantidad} onIonInput={(e) => setCantidad(e.detail.value!)}></IonInput>
-        </IonItem>
-        <br />
-        <IonItem>
-          <IonSelect label="Transportista" labelPlacement="floating" fill="outline" value={selectedTransportista} onIonChange={e => setSelectedTransportista(e.detail.value)}>
-            {transportistas.map((trp) => (
-              <IonSelectOption key={trp._id} value={trp}>
-                {trp.Nombre}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-          <IonSelect label="Conductor" labelPlacement="floating" fill="outline" value={selectedConductor} onIonChange={e => setSelectedConductor(e.detail.value)}>
-            {conducdores.map((cnt) => (
-              <IonSelectOption key={cnt._id} value={cnt}>
-                {cnt.NombreCompleto}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
-        </IonItem>
+        <IonCard>
+          <IonCardHeader>
+            Información General
+          </IonCardHeader>
+          <IonCardContent>
+            {/* <br /> */}
+            {/* <IonItem> */}
+            <IonRow>
+              <IonCol>
+                <IonSelect label="Remitente" labelPlacement="floating" fill="outline"
+                  interface={isDesktop ? 'popover' : 'action-sheet'} // Conditional interface
+                  // style={{ "--border-color": invalidFields.includes("selectedRemitente") ? "red" : "" }}
+                  // color="danger"
+                  value={selectedRemitente} onIonChange={e => setSelectedRemitente(e.detail.value)}>
+                  {remitentes.map((rmt) => (
+                    <IonSelectOption key={rmt._id} value={rmt}>
+                      {rmt.Nombre}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+              <IonCol>
+                <IonSelect label="Destinatario" labelPlacement="floating" fill="outline"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  value={selectedDestinatario} onIonChange={e => setSelectedDestinatario(e.detail.value)}>
+                  {destinatarios.map((dst) => (
+                    <IonSelectOption key={dst._id} value={dst}>
+                      {dst.Nombre}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
+            {/* </IonItem> */}
+            {/* <br /> */}
+            <IonRow>
+              <IonCol>
+                <IonSelect label="Punto de Partida"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedPuntoDePartida} onIonChange={e => setSelectedPuntoDePartida(e.detail.value)}>
+                  {puntosdePartida.map((ctr) => (
+                    <IonSelectOption key={ctr._id} value={ctr}>
+                      {ctr.Nombre}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+              <IonCol>
+                <IonSelect label="Punto de Destino"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedPuntoDeDestino} onIonChange={e => setSelectedPuntoDeDestino(e.detail.value)}>
+                  {puntosdeDestino.map((ctr) => (
+                    <IonSelectOption key={ctr._id} value={ctr}>
+                      {ctr.Nombre}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
+            {/* <br /> */}
+            <IonRow>
+              <IonCol>
+                <IonSelect label="Motivos de Traslado"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedMotivo} onIonChange={e => setSelectedMotivo(e.detail.value)}>
+                  {motivosDeTraspaso.map((mtv) => (
+                    <IonSelectOption key={mtv._id} value={mtv}>
+                      {mtv.Valor}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
+            {/* <br /> */}
+            <IonRow>
+              <IonCol>
+                <IonSelect label="Producto"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedProducto} onIonChange={e => setSelectedProducto(e.detail.value)}>
+                  {productos.map((prd) => (
+                    <IonSelectOption key={prd._id} value={prd}>
+                      {prd.Descripcion}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+              <IonCol>
+                <IonInput label="Cantidad" labelPlacement="stacked" fill="solid" type="number" value={cantidad} onIonInput={(e) => setCantidad(e.detail.value!)}></IonInput>
+              </IonCol>
+            </IonRow>
+            {/* <br /> */}
+            <IonRow>
+              <IonCol>
+                <IonSelect label="Transportista"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedTransportista} onIonChange={e => setSelectedTransportista(e.detail.value)}>
+                  {transportistas.map((trp) => (
+                    <IonSelectOption key={trp._id} value={trp}>
+                      {trp.Nombre}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+              <IonCol>
+                <IonSelect label="Conductor"
+                  interface={isDesktop ? 'popover' : 'action-sheet'}
+                  labelPlacement="floating" fill="outline" value={selectedConductor} onIonChange={e => setSelectedConductor(e.detail.value)}>
+                  {conducdores.map((cnt) => (
+                    <IonSelectOption key={cnt._id} value={cnt}>
+                      {cnt.NombreCompleto}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
+          </IonCardContent>
+        </IonCard>
         <IonButton id="present-alert" expand="block">Salvar</IonButton>
         <IonAlert
           // header="Alert!"
