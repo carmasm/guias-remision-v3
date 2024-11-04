@@ -31,6 +31,7 @@ import ListaUsuariosPage from './pages/Usuarios/ListaUsuarios';
 import DetalleUsuario from './pages/Usuarios/DetalleUsuario';
 import Aprobaciones from './pages/Aprobaciones/Aprobaciones';
 import Codigos from './pages/Codigos/Codigos';
+import DetalleCodigo from './pages/Codigos/DetalleCodigo';
 import Remitentes from './pages/Remitentes/Remitentes';
 import Destinatarios from './pages/Destinatarios/Destinatarios';
 import Productores from './pages/Productores/Productores';
@@ -79,7 +80,8 @@ const App: React.FC = () => {
             <Route path="/page/usuarios" component={ListaUsuariosPage} exact={true}/>
             <Route path="/page/usuarios/:userId" component={DetalleUsuario} />
             <Route path="/page/aprobaciones" component={Aprobaciones} />
-            <Route path="/page/codigos" component={Codigos} />
+            <Route path="/page/codigos" component={Codigos} exact={true}/>
+            <Route path="/page/codigos/:codeId" component={DetalleCodigo} />
             <Route path="/page/remitentes" component={Remitentes} />
             <Route path="/page/destinatarios" component={Destinatarios} />
             <Route path="/page/productores" component={Productores} />

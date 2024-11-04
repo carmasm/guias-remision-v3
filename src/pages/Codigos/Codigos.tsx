@@ -69,6 +69,12 @@ const Codigos: React.FC<RouteComponentProps> = ({ history }) => {
                     //     Activo: codigo.Activo
                     //   }
                     // })
+                    history.push({
+                      pathname: `/page/codigos/${codigo._id}`,
+                      state: {
+                        codigo: codigo
+                      }   
+                    })
                   }}>
                     <IonLabel>Ver</IonLabel>
                   </IonButton>
@@ -79,7 +85,7 @@ const Codigos: React.FC<RouteComponentProps> = ({ history }) => {
         </IonList>
 
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton>
+          <IonFabButton routerLink="/page/codigos/0">
             {/* <IonRouterLink routerDirection="forward" routerLink={`/item/${item.id}`}> */}
             <IonIcon icon={add} />
           </IonFabButton>

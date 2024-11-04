@@ -36,6 +36,8 @@ const DetalleUsuario: React.FC<UserDetailPageProps> = ({ match, history }) => {
 
     useEffect(() => {
 
+        console.count('useEffect detalle usuario count');
+
         // debugger
         if (location.state && location.state.usuario) {
             setUserData(location.state.usuario);
@@ -218,13 +220,13 @@ const DetalleUsuario: React.FC<UserDetailPageProps> = ({ match, history }) => {
                 </IonCard>
                 <IonRow>
                     <IonCol>
-                        <IonButton expand='block' id="present-alert">Salvar</IonButton>
+                        <IonButton expand='block' id="present-alert2">Salvar</IonButton>
                     </IonCol>
                 </IonRow>
                 <IonAlert
                     // header="Alert!"
                     message="¿Está seguro que desea salvar los datos?"
-                    trigger="present-alert"
+                    trigger="present-alert2"
                     buttons={[
                         {
                             text: 'No',
