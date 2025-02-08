@@ -21,3 +21,8 @@ jobs:
 
     - name: Debug - List Files in Workspace
       run: ls -alh
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t cjarmas/guias-remision-v3 .
+        docker push cjarmas/guias-remision-v3
