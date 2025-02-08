@@ -293,7 +293,7 @@ const NuevaGuiaRemision: React.FC = () => {
             {/* <br /> */}
             <IonRow>
               <IonCol>
-                <IonSelect label="Punto de Partida"
+                <IonSelect label="Punto de Partidaaa"
                   interface={isDesktop ? 'popover' : 'action-sheet'}
                   labelPlacement="floating" fill="outline" value={selectedPuntoDePartida} onIonChange={e => setSelectedPuntoDePartida(e.detail.value)}>
                   {puntosdePartida.map((ctr) => (
