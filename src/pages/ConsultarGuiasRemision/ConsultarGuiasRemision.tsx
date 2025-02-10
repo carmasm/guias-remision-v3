@@ -152,7 +152,7 @@ const ConsultarGuiasRemision: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Apache CouchDB v3.3</IonTitle>
+          <IonTitle>Apache CouchDB v3.5</IonTitle>
         </IonToolbar>
         {/* <IonToolbar>
           <IonSearchbar />
