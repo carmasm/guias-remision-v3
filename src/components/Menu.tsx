@@ -51,7 +51,14 @@ import firebase from 'firebase/compat/app';
 const handleLogout = async () => {
   try {
 
-    await firebase.auth().signOut();
+    const response = await fetch("https://mocabapi.ddns.net/logout", {
+      method: "POST",
+      credentials: "include", // Ensures cookies are sent with the request
+    });
+
+    if (!response.ok) {
+      throw new Error("Logout failed");
+    }
 
   } catch (error) {
     console.error('Logout error:', error);

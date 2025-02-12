@@ -6,20 +6,12 @@ import { personCircle } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import { IonItem, IonLabel, IonInput, IonButton, IonIcon, IonAlert } from '@ionic/react';
-import firebaseConfig from '../firebaseConfig'
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
 // import { UserContext } from '../../UserContext';
 
 function validateEmail(email: string) {
   const re = /^((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\]))$/;
   return re.test(String(email).toLowerCase());
 }
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
 
 const Login: React.FC = () => {
   const history = useHistory();
@@ -57,16 +49,8 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
 
-    if (!loginData.userName) {
-      // dismiss();
-      setMessage("Ingrese el usuario");
-      setIserror(true);
-      return;
-    }
-
-    if (!loginData.password) {
-      // dismiss();
-      setMessage("Ingrese una contraseña");
+    if (!loginData.userName || !loginData.password) {
+      setMessage("Ingrese usuario y contraseña");
       setIserror(true);
       return;
     }
@@ -83,11 +67,26 @@ const Login: React.FC = () => {
     try {
       present('Iniciando sesión...');
 
-      const email = `${loginData.userName}@gplanethn.com`
+      const email = `${loginData.userName}@gplanet.com`
       debugger
 
-      const res = await firebase.auth().signInWithEmailAndPassword(email, loginData.password);
-      console.log(res)
+      // Call your ASP.NET Core endpoint
+      const response = await fetch("https://mocabapi.ddns.net/login?useCookies=true&useSessionCookies=true", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: loginData.password
+        }),
+        credentials: "include" // Required for cookies
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Authentication failed");
+      }
 
       dismiss();
       history.push("/page/consultar-guias-remision");
